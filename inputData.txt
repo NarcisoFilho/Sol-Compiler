@@ -1,0 +1,25 @@
+int count = 72;
+count = 72 + 3;
+
+char letter = 'n';
+char dupleLetter = 'dl';
+
+@# // Stray in program
+
+char name[] = "Narciso";
+
+while(count >= 0){
+    if(count == 20){
+        count = 10;
+        print("Count is 10 now");
+    }
+}
+
+//char tripleChar = 'thisErrorIsInsideComments';
+
+///
+char multiChar = 'insideComment';
+char multiChar2 = 'yetInsideComment';
+\\\
+
+return 0;
