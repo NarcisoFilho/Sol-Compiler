@@ -519,9 +519,9 @@ char *yytext;
 #line 3 "scanner.l"
     #include "tokens.h"
     #include "CompilerErrorType.h" 
-    typedef enum{false, true} Boolean;
+    typedef enum{false, true} bool;
 
-    Boolean running = true;
+    bool running = true;
     int lineNumber = 1;
 #line 527 "lex.yy.c"
 

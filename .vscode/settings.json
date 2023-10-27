@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "typeinfo": "cpp",
+        "type_traits": "cpp",
+        "symboltable.h": "c",
+        "stdio.h": "c"
+    }
+}

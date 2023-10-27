@@ -1,5 +1,12 @@
-
 %{
+/** JOKERC: Joker language compiler
+ *  Module: Lexical Analyzer(Scanner)
+ *  @date october 27 2023
+ *  @version 1.0
+ *  @author Manoel Narciso Reis
+ *  @brief Scanner module of JOKERC
+ * 
+ */
     #include "tokens.h"
     #include "Boolean.h"
     #include "CompilerErrorType.h" 
