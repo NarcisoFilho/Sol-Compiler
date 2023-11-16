@@ -1,5 +1,5 @@
 /** JOKERC: Joker language compiler
- *  MODULE: Lexical Analyzer(Scanner)
+ *  MODULE: Symbol Table
  *  @date october 27 2023
  *  @version 1.0
  *  @author Manoel Narciso Reis
@@ -15,40 +15,14 @@
  *          - setRehashAlertStatus
  */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include "Boolean.h"
-
-typedef struct SymbolTableNode{
-    int type;
-    char* value;
-    struct SymbolTableNode* nextNode;
-}SymbolTableNode;
+#include "SymbolTable.h"
 
 // Private Data (Internal atributes)
 static SymbolTableNode** symbolTable;          // Symbol Table pointer
-static int currentTableSize = 1001;              // Table entries count(atomatically increased)
-// static int currentTableSize = 19;              // Table entries count(atomatically increased)
+static int currentTableSize = 7;            // Table entries count(atomatically increased)
 static int addedSymbolsCount = 0;              // Added symbols number
 static const float maximusLoadFactor = 0.7;    
-static const bool reahashAlertActive = false;    
-
-/// Prototypes
-    // Public(Interface functions)
-    int initSymbolTable();
-    void printSymbolTable();
-    SymbolTableNode* addSymbol(char*, int);
-    SymbolTableNode* findSymbol(char*);
-    int removeSymbol(char*);
-    int setRehashAlertStatus(int);
-
-    // Private(Internal functions)
-    static bool rehashSymbolTable();
-    static int calculateHashAddress(char*);
-    static int getGreaterPrimeNumber(int);
-    static bool isPrimeNumber(int);
-    static float getLoadFactor();
+static bool rehashAlertActive = false;         // When active, notification is printed in table rehashing event
 
 /** @brief Initializes 'symbolTable', setting all pointers in list to zero
  */
@@ -76,15 +50,15 @@ int initSymbolTable(){
  */
 SymbolTableNode* addSymbol(char symbol[], int symbolType){
     SymbolTableNode *node = findSymbol(symbol);
-
+   
     if(node == 0){
         // Rehashe Symbol Table if necessary
         if(getLoadFactor() >= maximusLoadFactor){
-            if(reahashAlertActive){
+            if(rehashAlertActive){
                 if(rehashSymbolTable())
                     printf("-> Symbol Table Rehashed (%d entries)\n", currentTableSize);
                 else
-                    printf("->\a Can not rehashe Symbol Table!\n");
+                    printf("->\a Can not rehash Symbol Table!\n");
             }
         }
 
@@ -96,8 +70,7 @@ SymbolTableNode* addSymbol(char symbol[], int symbolType){
         strcpy(value, symbol);
         node->value = value;
         node->type = symbolType;
-        node->nextNode = symbolTable[address];
-        symbolTable[address] = node;
+        insertNodeInTable(node);
         addedSymbolsCount++;
     }
 
@@ -120,6 +93,7 @@ int removeSymbol(char symbol[]){
                 symbolTable[address] = node->nextNode;
                 free(node->value);                
                 free(node);
+                addedSymbolsCount--;
                 return (int)true;
             }else{
                 SymbolTableNode *previousNode = symbolTable[address];
@@ -127,6 +101,7 @@ int removeSymbol(char symbol[]){
                     if(previousNode->nextNode == node){
                         previousNode->nextNode = node->nextNode;
                         free(node);
+                        addedSymbolsCount--;
                         return (int)true;
                     }
                 }
@@ -158,12 +133,61 @@ SymbolTableNode* findSymbol(char symbol[]){
 /** @brief Present Symbol Table contents in stdout
  */
 void printSymbolTable(){
+    printf("\n-------- SYMBOL TABLE --------------------------------\n");
+    printf(" line |               list of <type>symbol   \n");
+    printf("------+-----------------------------------------------\n");
     for(int i = 0 ; i < currentTableSize ; i++){
         SymbolTableNode *node = symbolTable[i];
+        bool rowWasAlreadyIndicated = false;
         while(node != 0){
-            printf("%s - %d\n", node->value, node->type);
+            if(!rowWasAlreadyIndicated){
+                if(i != currentTableSize - 1)
+                    printf(" %4d | ", i);
+                else{
+                    printf(" %4d | ", i);   // last
+                }
+                rowWasAlreadyIndicated = true;
+            }else{
+                printf(" ,  ");
+            }
+            printSymbolType(node->type);              
+            printf("%s", node->value);
             node = node->nextNode;
         }
+        if(rowWasAlreadyIndicated){
+            if(i != currentTableSize - 1)
+                printf("\n------+-----------------------------------------------\n");
+            else
+                printf("\n");                
+        }else{
+            if(i == currentTableSize - 1)
+                printf(" %4d | \n", i); // last
+        }
+    }
+    printf("------------------------------------------------------\n");
+    
+}
+
+void printSymbolType(int type){
+    switch(type){
+        case TK_IDENTIFIER_TOKEN:
+            printf("<ID>");
+            break;
+        case LIT_REAL_TOKEN:
+            printf("<LFLOAT>");
+            break;
+        case LIT_INT_TOKEN:
+            printf("<LINT>");
+            break;
+        case LIT_STRING_TOKEN:
+            printf("<LSTR>");
+            break;
+        case LIT_CHAR_TOKEN:
+            printf("<LCHAR>");
+            break;
+        default:
+            printf("<?>");
+            break;
     }
 }
 
@@ -181,11 +205,13 @@ int getTableSize(){
     return currentTableSize;
 }
 
-/** @brief Set 
- *  @return Symbol Table's list slots count
+/** @brief Turn ON/OFF rehashing notification
+ *  @param newStatus New rehashing notification mode
+ *  @return 1 if operaration was successfully and 0 other case
  */
-int setRehashAlertStatus(){
-    return currentTableSize;
+int setRehashAlertStatus(int newStatus){
+    rehashAlertActive = (bool)newStatus;
+    return (int)((int)rehashAlertActive == newStatus);
 }
 
 /// ================== AUXILIARY FUNCTIONS =======================================
@@ -214,9 +240,7 @@ int calculateHashAddress(char symbol[]){
  *  @return The greater prime number until 'upperLimit'. If 'upperLimit' smaller than the smallest 
  *  prime number(2), number 2 is returned
  */
-int getGreaterPrimeNumber(int upperLimit){
-    return upperLimit;
-    
+int getGreaterPrimeNumber(int upperLimit){    
     for(int greater = upperLimit ; greater >= 2 ; greater--){
         if(isPrimeNumber(greater))
             return greater;
@@ -260,7 +284,6 @@ bool rehashSymbolTable(){
 
     // Allocate new bigger table
     SymbolTableNode **oldTable = symbolTable;
-
     symbolTable = (SymbolTableNode**)malloc(currentTableSize * sizeof(SymbolTableNode*));
     if(symbolTable == 0 ){
         symbolTable = oldTable;
@@ -273,13 +296,23 @@ bool rehashSymbolTable(){
         symbolTable[i] = 0;    
     
     for(int i = 0 ; i < oldSize ; i++){
-        while(oldTable[i] != 0){
-            addSymbol(oldTable[i]->value, oldTable[i]->type);
+        SymbolTableNode *node = oldTable[i];
+        SymbolTableNode *nextNode;
+        while(node != 0){
+            nextNode = node->nextNode;
+            insertNodeInTable(node);
+            node = nextNode;
         }
     }
 
-    // Free old-table's allocated memory
-    free(oldTable);
-
     return true;
+}
+
+/** @brief Insert a Table node in Symbol Table
+ *  @param node Pointer to the node to be inserted
+ */
+void insertNodeInTable(SymbolTableNode* node){
+    int address = calculateHashAddress(node->value);
+    node->nextNode = symbolTable[address];
+    symbolTable[address] = node;
 }

@@ -1,4 +1,7 @@
+// JockerC: Test file
 int count = 72;
+float ft = 87.99;
+float ft2 = .77;
 count = 72 + 3;
 
 char letter = 'n';
