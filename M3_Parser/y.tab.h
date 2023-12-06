@@ -15,12 +15,12 @@
 #define OPERATOR_GE 268
 #define OPERATOR_EQ 269
 #define OPERATOR_DIF 270
-#define TK_IDENTIFIER 271
-#define LIT_INT 272
-#define LIT_REAL 273
-#define LIT_CHAR 274
-#define LIT_STRING 275
-#define TOKEN_ERROR 276
+#define TOKEN_ERROR 271
+#define TK_IDENTIFIER 272
+#define LIT_INT 273
+#define LIT_REAL 274
+#define LIT_CHAR 275
+#define LIT_STRING 276
 #ifdef YYSTYPE
 #undef  YYSTYPE_IS_DECLARED
 #define YYSTYPE_IS_DECLARED 1
@@ -29,6 +29,7 @@
 #define YYSTYPE_IS_DECLARED 1
 typedef union YYSTYPE {
 	struct SymbolTableNode *symbol;
+    struct AST *astNod;
 } YYSTYPE;
 #endif /* !YYSTYPE_IS_DECLARED */
 extern YYSTYPE yylval;

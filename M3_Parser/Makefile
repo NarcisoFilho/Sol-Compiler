@@ -7,8 +7,8 @@
 # and #include "main.c" in the last part of the scanner.l
 #
 
-etapa2: SymbolTable.o y.tab.o lex.yy.o main.o   
-	gcc -o etapa2 main.o lex.yy.o y.tab.o SymbolTable.o
+etapa2: SymbolTable.o y.tab.o lex.yy.o main.o AST.o   
+	gcc -o etapa2 main.o lex.yy.o y.tab.o SymbolTable.o AST.o
 main.o: main.c
 	gcc -c main.c
 lex.yy.o: lex.yy.c
@@ -21,6 +21,8 @@ y.tab.c: parser.y
 	yacc -d parser.y
 SymbolTable.o: SymbolTable.c
 	gcc -c SymbolTable.c
+AST.o: AST.c
+	gcc -c AST.c
 
 clean:
 	rm etapa2 y.tab.c y.tab.h lex.yy.c lex.yy.h *.o
