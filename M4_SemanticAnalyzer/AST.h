@@ -19,7 +19,7 @@ AST* astCreate(SymbolTableNode*, enum AST_TYPE, ...);
 void astPrint(AST*, int);
 void setGlobalAST(AST *);
 void astExportProgram(FILE*);
-void astGenerateCode (AST*, FILE*, int, int);
+void astGenerateCode(AST*, FILE*, int, int);
 int calculateSonsCount(AST);
 int getSonsCountFromType(enum AST_TYPE);
 char* getTypeName(enum AST_TYPE);

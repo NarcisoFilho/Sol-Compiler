@@ -2,12 +2,14 @@
     #include <stdio.h>
     #include <stdlib.h>		
 	#include "AST.h"
-	#include "y.tab.h"	
+    #include "SemanticAnalyser.h"	
+	#include "y.tab.h"
     
     // Prototypes
 	int yylex();
 	void yyerror(const char*);
 	int getLineNumber(void);
+    int checkSemantic(AST *);
 %}
 
 %token KW_CHAR KW_INT KW_FLOAT
@@ -49,7 +51,7 @@
 }
 
 %%
-program: declarationsList codeImplementationList        {$$ = astCreate(NULL, AST_FULL_PROG, $1, $2); astPrint($$, 0); setGlobalAST($$);}
+program: declarationsList codeImplementationList        {$$ = astCreate(NULL, AST_FULL_PROG, $1, $2); astPrint($$, 0); setGlobalAST($$); checkSemantic($$);}
     | declarationsList                                  {$$ = astCreate(NULL, AST_HEADER, $1); astPrint($$, 0); setGlobalAST($$);}
     ;
 
@@ -58,10 +60,10 @@ declarationsList: declaration                           {$$ = $1;}
     | declaration declarationsList                      {$$ = astCreate(NULL, AST_DECLARATION_LIST, $1, $2);}
     ;
 
-declaration: dataType TK_IDENTIFIER '=' expression ';'              {$$ = astCreate($2, AST_VAR_DECLARATION, $1, $4);}
-    | dataType TK_IDENTIFIER '[' literal ']' ';'                    {$$ = astCreate($2, AST_ARRAY_DECLARATION, $1, $4);}
+declaration: dataType TK_IDENTIFIER '=' expression ';'              {$$ = astCreate($2, AST_VAR_DECLARATION, $1, $4); specifyIdentifierType($$, AST_VAR_DECLARATION);}
+    | dataType TK_IDENTIFIER '[' literal ']' ';'                    {$$ = astCreate($2, AST_ARRAY_DECLARATION, $1, $4); specifyIdentifierType($$, AST_ARRAY_DECLARATION);}
     | dataType TK_IDENTIFIER '[' literal ']' literalsList ';'       {$$ = astCreate($2, AST_ARRAY_DEC_AND_INIT, $1, $4, $6);}        
-    | dataType TK_IDENTIFIER '(' formalParameterList ')' ';'        {$$ = astCreate($2, AST_FUNCTION_DECLARATION, $1, $4);}
+    | dataType TK_IDENTIFIER '(' formalParameterList ')' ';'        {$$ = astCreate($2, AST_FUNCTION_DECLARATION, $1, $4); specifyIdentifierType($$, AST_FUNCTION_DECLARATION);}
     ;
 
 formalParameter: dataType TK_IDENTIFIER                 {$$ = astCreate($2, AST_PARAM, $1);}

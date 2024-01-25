@@ -7,8 +7,8 @@
 # and #include "main.c" in the last part of the scanner.l
 #
 
-etapa3: SymbolTable.o y.tab.o lex.yy.o main.o AST.o   
-	gcc -o etapa3 main.o lex.yy.o y.tab.o SymbolTable.o AST.o
+etapa4: SymbolTable.o y.tab.o lex.yy.o main.o AST.o SemanticAnalyser.o  
+	gcc -o etapa4 main.o lex.yy.o y.tab.o SymbolTable.o AST.o SemanticAnalyser.o
 main.o: main.c
 	gcc -c main.c
 lex.yy.o: lex.yy.c
@@ -23,6 +23,8 @@ SymbolTable.o: SymbolTable.c
 	gcc -c SymbolTable.c
 AST.o: AST.c
 	gcc -c AST.c
+SemanticAnalyser.o: 
+	gcc -c SemanticAnalyser.c
 
 clean:
-	rm etapa3 y.tab.c y.tab.h lex.yy.c lex.yy.h *.o
+	rm etapa4 y.tab.c y.tab.h lex.yy.c lex.yy.h *.o

@@ -1,46 +1,44 @@
-/** JockerC: Test file 
-  * 
-  */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "lex.yy.h"
 #include "y.tab.h"
 #include "SymbolTable.h"
-// #include <time.h>
-#include <unistd.h>
+#include "AST.h"
 
 void initMe();
 int isRunning();
 int yyparse();
-void loadingEffect(int);
 
 int main(int argc, char** argv){
-    if(argc < 2){
-        printf("Error: Expected 1 argument but receives 0\n");
-        printf("Usage: %s 'fileName'\n", argv[0]);
+    if(argc < 3){
+        printf("Error: Expected 2 argument but receives %d\n", argc - 1);
+        printf("Usage: %s 'inputFile' 'outputFile'\n", argv[0]);
         exit(1);
     }
     
     initMe();
 
 	FILE* inputFile = fopen(argv[1], "r");
-	
+    if(inputFile == NULL){
+        printf("\aError: Unable to open input file '%s'\n", argv[1]);
+        exit(1);
+    }
+
     yyin = inputFile;
 
-    printf("\n# Scanning ");
-    loadingEffect(500);
+    printf("\n# Parsing \n");
 
-    int parserReturn = yyparse();
-    printSymbolTable();
+    if(yyparse() != 3){
+        printf("\nSuccessfully parsed!\n");   
+        FILE* outputFile = fopen(argv[2], "w");
+        if(outputFile == NULL){
+            printf("\aError: Unable to create output file '%s'\n", argv[2]);
+            exit(1);
+        }else{
+            astExportProgram(outputFile);
+        }
 
-    printf("\n# Parsing ");
-    loadingEffect(500);
-
-    if(parserReturn != 3){
-        printSymbolTable();
-        printf("Successfully parsed!\n");
         return 0;
     }else{
         printf("\a\n");
@@ -48,10 +46,3 @@ int main(int argc, char** argv){
     }
 }
 
-void loadingEffect(int msTime){
-    for (int i = 0; i < 4; ++i) {
-        printf(">");
-        // fflush(stdout); 
-        // usleep(msTime * 1000);
-    }
-}
