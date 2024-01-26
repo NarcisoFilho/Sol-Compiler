@@ -12,11 +12,13 @@
 // em expressoes
 // ** funcao para saber se é booleano
 
-void printSemanticError(char* errorDesc, char* param);
-int checkSemantic(AST *node);
-void specifyIdentifierType(AST *node, int type);
+void printSemanticError(char*, char*);
+int checkSemantic(AST*);
+void specifyIdentifierType(AST*, int);
+void specifySymbolDataType(AST*, DataType);
+void setDataType(AST*, int);
+bool checkAssignment(AST*);
 // int testID(HASH_NODE* id,AST* node);
-// void setDataType(AST *node, int type);
 // int calculateFunctionParametersNumber(AST *node);
 // void setNumParams(AST *node, int npar);
 // void checkSymbolsUse(AST *node);

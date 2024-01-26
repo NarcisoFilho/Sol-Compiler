@@ -150,7 +150,9 @@ void printSymbolTable(){
             }else{
                 printf(" ,  ");
             }
-            printSymbolType(node->type);              
+            printSymbolType(node->type);   
+            if(node->type == VARIABLE_ID_TOKEN || node->type == PARAM_ID_TOKEN || node->type == ARRAY_ID_TOKEN || node->type == FUNCTION_ID_TOKEN)           
+                printSymbolDataType(node);
             printf("%s", node->value);
             node = node->nextNode;
         }
@@ -168,10 +170,33 @@ void printSymbolTable(){
     
 }
 
+void printSymbolDataType(SymbolTableNode* node){
+    char typeName[10] = "";
+    switch(node->dataType){
+		case CHAR_DATA_TYPE: strcpy(typeName, "char"); break;
+		case INT_DATA_TYPE: strcpy(typeName, "int"); break;
+		case REAL_DATA_TYPE: strcpy(typeName, "float"); break;
+        default: strcpy(typeName, "undef");break;
+    }
+    printf("[%s]", typeName);
+}
+
 void printSymbolType(int type){
     switch(type){
         case TK_IDENTIFIER_TOKEN:
             printf("<ID>");
+            break;
+        case PARAM_ID_TOKEN:
+            printf("<PARAM_ID>");
+            break;
+        case VARIABLE_ID_TOKEN:
+            printf("<VAR_ID>");
+            break;
+        case ARRAY_ID_TOKEN:
+            printf("<ARR_ID>");
+            break;
+        case FUNCTION_ID_TOKEN:
+            printf("<FUNC_ID>");
             break;
         case LIT_REAL_TOKEN:
             printf("<LFLOAT>");

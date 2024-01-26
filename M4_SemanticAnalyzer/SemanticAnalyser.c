@@ -20,55 +20,106 @@ int checkSemantic(AST *node){
 	return semanticErrorsCount;
 }
 
-void specifyIdentifierType(AST *node, int type){
-	switch(type){
-		case AST_PARAM:	
-			if(node->symbol->type != TK_IDENTIFIER_TOKEN){
-				printSemanticErrorMessage("Redeclaration of parameter", node->symbol->value);
-				return;
-			}
-			
-			node->symbol->type = VARIABLE_ID_TOKEN;
-			// setDataType(node, node->son[0]->type);
-			break;
-		case AST_VAR_DECLARATION: 				
-			if(node->symbol->type != TK_IDENTIFIER_TOKEN){
-				printSemanticErrorMessage("Redeclaration of variable", node->symbol->value);
-				return;
-			}
+void specifyIdentifierType(AST* node, int type){
+	if(node != NULL){
+		if(node->symbol != NULL){
+			switch(type){
+				case AST_PARAM:	
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Redeclaration of parameter", node->symbol->value);
+						return;
+					}
+					
+					node->symbol->type = PARAM_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					break;
+				case AST_VAR_DECLARATION: 				
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Redeclaration of variable", node->symbol->value);
+						return;
+					}
 
-			node->symbol->type = VARIABLE_ID_TOKEN;
-			// setDataType(node, node->son[0]->type);
-			break;
-		case AST_ARRAY_DECLARATION: 
-			if(node->symbol->type != TK_IDENTIFIER_TOKEN){
-				printSemanticErrorMessage("Redeclaration of array", node->symbol->value);
-				return;
-			}
+					node->symbol->type = VARIABLE_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					break;
+				case AST_ARRAY_DECLARATION: 
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Redeclaration of array", node->symbol->value);
+						return;
+					}
 
-			node->symbol->type = ARRAY_ID_TOKEN;
-			// setDataType(node, node->son[0]->son[0]->type);
-			break;
-		case AST_FUNCTION_DECLARATION:
-			if(node->symbol->type != TK_IDENTIFIER_TOKEN){
-				printSemanticErrorMessage("Function redeclaration", node->symbol->value);
-				return;
+					node->symbol->type = ARRAY_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					break;
+				case AST_ARRAY_DEC_AND_INIT: 
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Redeclaration of array", node->symbol->value);
+						return;
+					}
+
+					node->symbol->type = ARRAY_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					break;
+				case AST_FUNCTION_DECLARATION:
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Function redeclaration", node->symbol->value);
+						return;
+					}
+					node->symbol->type = FUNCTION_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					// int parametersNumber = calculateFunctionParametersNumber(node->son[0]->son[1]);
+					// setNumParams(node,parametersNumber);
+					break;
+				case LIT_CHAR_TOKEN:
+					if(node->symbol->type != TK_IDENTIFIER_TOKEN){
+						printSemanticErrorMessage("Function redeclaration", node->symbol->value);
+						return;
+					}
+					node->symbol->type = FUNCTION_ID_TOKEN;
+					setDataType(node, node->sons[0]->type);
+					// int parametersNumber = calculateFunctionParametersNumber(node->son[0]->son[1]);
+					// setNumParams(node,parametersNumber);
+					break;
 			}
-			node->symbol->type = FUNCTION_ID_TOKEN;
-			// setDataType(node->son[0], node->son[0]->son[0]->type);
-			// int parametersNumber = calculateFunctionParametersNumber(node->son[0]->son[1]);
-			// setNumParams(node,parametersNumber);
-			break;
+		}
 	}
 }
 
-int calculateFunctionParametersNumber(AST *node){
+void specifySymbolDataType(AST* node, DataType dataType){
+	if(node != NULL){
+		if(node->symbol != NULL){
+			if(node->type == AST_SYMBOL){
+				node->symbol->dataType = dataType;
+			}
+		}
+	}
+}
+
+int calculateFunctionParametersNumber(AST* node){
 	if(!node)
 		return 0;
 	else
 		return 1 + calculateFunctionParametersNumber(node->sons[1]);
 }
 
+void setDataType(AST *node, int type){
+	switch(type){
+		case AST_CHAR: node->symbol->dataType = CHAR_DATA_TYPE; break;
+		case AST_INT: node->symbol->dataType = INT_DATA_TYPE; break;
+		case AST_FLOAT: node->symbol->dataType = REAL_DATA_TYPE; break;
+		default: node->symbol->dataType = UNDEF_DATA_TYPE; break;
+	}
+	// node->dataType = node->symbol->dataType;
+}
+
+bool checkAssignment(AST* astNode){
+	// switch(astNode->type){
+	// 	case AST_VAR_DECLARATION:
+	// 		if(astNode->symbol->dataType != astNode->sons[0])
+	// 		break;
+	// }
+	return true;
+}
 // void setNumParams(AST *node, int npar){
 // 	int address = hash_address(node->son[0]->symbol->value);
 // 	SymbolTableNode* hash = hash_find(node->son[0]->symbol->value, address);
@@ -102,18 +153,6 @@ int calculateFunctionParametersNumber(AST *node){
 
 // }
 
-// void setDataType(AST *node, int type){
-// 	switch(type){
-// 		case AST_BYTE: node->symbol->dataType = DATATYPE_BYTE; break;
-// 		case AST_SHORT: node->symbol->dataType = DATATYPE_SHORT; break;
-// 		case AST_LONG: node->symbol->dataType = DATATYPE_LONG; break;
-// 		case AST_FLOAT: node->symbol->dataType = DATATYPE_FLOAT; break;
-// 		case AST_DOUBLE: node->symbol->dataType = DATATYPE_DOUBLE; break;
-// 		case AST_CHAR: node->symbol->dataType = DATATYPE_CHAR; break;
-// 		default: node->symbol->dataType = DATATYPE_UNDEFINED; break;
-// 	}
-// 	node->dataType = node->symbol->dataType;
-// }
 
 // void checkSymbolsUse(AST *node){
 // 	if(node == NULL){

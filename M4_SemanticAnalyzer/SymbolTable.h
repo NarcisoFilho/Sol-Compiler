@@ -31,19 +31,21 @@ enum TokensTypes {
     LIT_STRING_TOKEN,
     VARIABLE_ID_TOKEN,
     ARRAY_ID_TOKEN,
-    FUNCTION_ID_TOKEN
+    FUNCTION_ID_TOKEN,
+    PARAM_ID_TOKEN
 };
 
-enum DataType {
-    REAL_DATA_TYPE,
+typedef enum {
+    CHAR_DATA_TYPE,
     INT_DATA_TYPE,
-    CHAR_DATA_TYPE
-};
+    REAL_DATA_TYPE,
+    UNDEF_DATA_TYPE
+} DataType;
 
 typedef struct SymbolTableNode{
     int type;
     char* value;
-    int dataType;
+    DataType dataType;
     struct SymbolTableNode* nextNode;
 }SymbolTableNode;
 
@@ -64,5 +66,6 @@ typedef struct SymbolTableNode{
     static float getLoadFactor();
     static void printSymbolType(int);
     static void insertNodeInTable(SymbolTableNode*);
+    void printSymbolDataType(SymbolTableNode*);
 
 #endif // __SYMBOL_TABLE_HPP
