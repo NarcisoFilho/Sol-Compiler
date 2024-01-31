@@ -14,7 +14,6 @@
 void initMe();
 int isRunning();
 int yyparse();
-void loadingEffect(int);
 
 int main(int argc, char** argv){
     if(argc < 2){
@@ -29,34 +28,19 @@ int main(int argc, char** argv){
 	
     yyin = inputFile;
 
-    printf("\n# Scanning ");
-    loadingEffect(500);
-
     int parserReturn = yyparse();
-    printSymbolTable();
-
-    printf("\n# Parsing ");
-    loadingEffect(500);
 
     if(parserReturn == 3){
         printf("Syntax errors found!\a\n");
         exit(3);
     }else{
-        printSymbolTable();
+        // printSymbolTable();
         if(parserReturn == 4){
             printf("Semantic errors found!\a\n");
             exit(4);
         }else{
-            printf("Successfully parsed!\n");
+            // printf("Successfully parsed!\n");
             return 0;
         }
-    }
-}
-
-void loadingEffect(int msTime){
-    for (int i = 0; i < 4; ++i) {
-        printf(">");
-        // fflush(stdout); 
-        // usleep(msTime * 1000);
     }
 }

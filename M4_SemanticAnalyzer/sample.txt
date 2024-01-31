@@ -9,10 +9,11 @@ int i=1;
 int v[10] 'a' 0'b'0 0 0 0 0 0 0;
 int matrix[100]; 
 float f=2.5;
+
 int a=0;
 
 int main();
-int incn (int x, int n );
+int incn (int firstParam, int n );
 
 ///
 Este eh um comentario 
@@ -24,17 +25,22 @@ code main
   {
   1a = 0;
   d = d - i;
-  d = 5;
+  d = 5 + 5.7;
   v[d] = 55;
   print v[5];
   print d;
-  i = 2;
+  i =   incn('a', 7.2);
+  i =   incn(5.99, 7.2);
 
   print "Digite um numero: \n";
   d = input(int);
   print "Digite mais um numero: \n";
 
-  while (i<10)
+  if(3 > 1  &  7){
+
+  }
+
+  while (f<10.5)
     {
     i = incn(i,1);
     d = incn(d,d);

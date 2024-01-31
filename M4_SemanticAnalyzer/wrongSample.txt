@@ -1,18 +1,23 @@
 // UFRGS - Compiladores - Marcelo Johann - 2023/2
-char g;
+
 char a=15;
 char x='x';
 char c='x';
 char d=100;
 int 1a='A';
 int i=1;
-int v[10] 'a' 0'b'0 0 0 0 0 0 0;
+int v[10] 'a' 0 'b' 0 0 0 0 0 0 7.7 8 9;
 int matrix[100]; 
-float f=2.5;
+float firstV=2.5;
 int a=0;
+
+int myArray[3.8];
 
 int main();
 int incn (int x, int n );
+int decm(int f);
+char decm(float var17);
+float newFunc(float var17);
 
 ///
 Este eh um comentario 
@@ -27,8 +32,19 @@ code main
   d = 5;
   v[d] = 55;
   print v[5];
+  print v[7.5];
+  print v[d];
+  print v[firstV];
   print d;
   i = 2;
+
+  v[1] = firstV;
+  v[7.5] = firstV;
+  v[firstV] = firstV;
+
+  v[1] = 7.5;
+  v[7.5] = 7.5;
+  v[firstV] = 7.5;
 
   print "Digite um numero: \n";
   d = input(int);
@@ -47,6 +63,7 @@ code main
   if (a==15)
     {
     a = a + 1;
+    weight = 82;
     print "A era=15\n";
     };
     

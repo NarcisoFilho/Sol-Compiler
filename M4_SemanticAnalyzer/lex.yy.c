@@ -522,10 +522,16 @@ char *yytext;
 
     bool running = true;
     int lineNumber = 1;
+    int collumnNumber = 0;
     extern YYSTYPE yylval;
-#line 527 "lex.yy.c"
 
-#line 529 "lex.yy.c"
+    typedef struct{
+        int row;
+        int col;
+    } RC;
+#line 533 "lex.yy.c"
+
+#line 535 "lex.yy.c"
 
 #define INITIAL 0
 #define LINE_COMMENT 1
@@ -754,9 +760,9 @@ YY_DECL
 		}
 
 	{
-#line 31 "scanner.l"
+#line 37 "scanner.l"
 
-#line 760 "lex.yy.c"
+#line 766 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -815,148 +821,148 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 33 "scanner.l"
+#line 39 "scanner.l"
 {yy_push_state(BLOCK_COMMENT);}
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 34 "scanner.l"
+#line 40 "scanner.l"
 {yy_push_state(LINE_COMMENT);}
 	YY_BREAK
 case 3:
 /* rule 3 can match eol */
 YY_RULE_SETUP
-#line 35 "scanner.l"
+#line 41 "scanner.l"
 {++lineNumber;}
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 36 "scanner.l"
+#line 42 "scanner.l"
 {}
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 38 "scanner.l"
+#line 44 "scanner.l"
 {return KW_CHAR;}
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 39 "scanner.l"
+#line 45 "scanner.l"
 {return KW_INT;}
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 40 "scanner.l"
+#line 46 "scanner.l"
 {return KW_FLOAT;}
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 41 "scanner.l"
+#line 47 "scanner.l"
 {return KW_CODE;}
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 42 "scanner.l"
+#line 48 "scanner.l"
 {return KW_IF;}
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 43 "scanner.l"
+#line 49 "scanner.l"
 {return KW_ELSE;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 44 "scanner.l"
+#line 50 "scanner.l"
 {return KW_WHILE;}
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 45 "scanner.l"
+#line 51 "scanner.l"
 {return KW_INPUT;}
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 46 "scanner.l"
+#line 52 "scanner.l"
 {return KW_PRINT;}
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 47 "scanner.l"
+#line 53 "scanner.l"
 {return KW_RETURN;}
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 49 "scanner.l"
+#line 55 "scanner.l"
 {return OPERATOR_LE;}
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 50 "scanner.l"
+#line 56 "scanner.l"
 {return OPERATOR_GE;}
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 51 "scanner.l"
+#line 57 "scanner.l"
 {return OPERATOR_EQ;}
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 52 "scanner.l"
+#line 58 "scanner.l"
 {return OPERATOR_DIF;}
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 54 "scanner.l"
+#line 60 "scanner.l"
 {yylval.symbol = addSymbol(yytext, LIT_REAL_TOKEN); return LIT_REAL;}
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 55 "scanner.l"
+#line 61 "scanner.l"
 {yylval.symbol = addSymbol(yytext, LIT_INT_TOKEN); return LIT_INT;}
 	YY_BREAK
 case 21:
 /* rule 21 can match eol */
 YY_RULE_SETUP
-#line 56 "scanner.l"
+#line 62 "scanner.l"
 {yylval.symbol = addSymbol(yytext, LIT_STRING_TOKEN); return LIT_STRING;}
 	YY_BREAK
 case 22:
 /* rule 22 can match eol */
 YY_RULE_SETUP
-#line 57 "scanner.l"
+#line 63 "scanner.l"
 {yylval.symbol = addSymbol(yytext, LIT_CHAR_TOKEN); return LIT_CHAR;}
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 59 "scanner.l"
+#line 65 "scanner.l"
 {yylval.symbol = addSymbol(yytext, TK_IDENTIFIER_TOKEN); return TK_IDENTIFIER;}
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 60 "scanner.l"
+#line 66 "scanner.l"
 {return (int)(yytext[0]);}
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 61 "scanner.l"
+#line 67 "scanner.l"
 {compilerErrorAlert(lineNumber, yytext, INVALID_CHARACTER); return TOKEN_ERROR;}
 	YY_BREAK
 
 
 case 26:
 YY_RULE_SETUP
-#line 65 "scanner.l"
+#line 71 "scanner.l"
 {yy_pop_state();}
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 66 "scanner.l"
+#line 72 "scanner.l"
 {++lineNumber;}
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 67 "scanner.l"
+#line 73 "scanner.l"
 {}
 	YY_BREAK
 
@@ -964,21 +970,21 @@ YY_RULE_SETUP
 case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
-#line 71 "scanner.l"
+#line 77 "scanner.l"
 {yy_pop_state();++lineNumber;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 72 "scanner.l"
+#line 78 "scanner.l"
 {}
 	YY_BREAK
 
 case 31:
 YY_RULE_SETUP
-#line 75 "scanner.l"
+#line 81 "scanner.l"
 ECHO;
 	YY_BREAK
-#line 982 "lex.yy.c"
+#line 988 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 case YY_STATE_EOF(LINE_COMMENT):
 case YY_STATE_EOF(BLOCK_COMMENT):
@@ -2031,7 +2037,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 75 "scanner.l"
+#line 81 "scanner.l"
 
 int yywrap(){
     running = false;
@@ -2042,14 +2048,26 @@ int isRunning(){
     return (int)running;
 }
 
-int getLineNumber(){
+int getRow(){
     return lineNumber;
+}
+
+int getCol(){
+    return collumnNumber;
+}
+
+RC getRC(){
+    RC rc;
+    rc.row = getRow();
+    rc.col = getCol();
+
+    return rc;
 }
 
 void initMe(){
     initSymbolTable();
-    setRehashAlertStatus((int)true);
-    // setHehashAlert((int)false);  // Uncomment if don't want rehashing notification
+    //setRehashAlertStatus((int)true);
+    setRehashAlertStatus((int)false);  // Uncomment if don't want rehashing notification
 }
 
 

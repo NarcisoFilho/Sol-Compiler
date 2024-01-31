@@ -30,6 +30,11 @@ AST* astCreate(SymbolTableNode *symbol, enum AST_TYPE type, ...){
 	return tree;
 }
 
+void setRC(AST* ast, RC rc){
+	ast->row = rc.row;
+	ast->col = rc.col;
+}
+
 void astPrint(AST *node, int level){	
 	if(node != NULL){
 		for(int tabs = 0; tabs < level; tabs++)

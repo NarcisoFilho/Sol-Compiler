@@ -9,13 +9,22 @@
 enum AST_TYPE;
 typedef struct AST{
 	int type;
+    int dataType;
 	SymbolTableNode *symbol;
 	struct AST **sons;
+    int row;
+    int col;
 } AST;
+
+typedef struct{
+    int row;
+    int col;
+} RC;
 
 void setGlobalAST(AST*);
 void applyIdentation(FILE*, int, int);
 AST* astCreate(SymbolTableNode*, enum AST_TYPE, ...);
+void setRC(AST*, RC);
 void astPrint(AST*, int);
 void setGlobalAST(AST *);
 void astExportProgram(FILE*);

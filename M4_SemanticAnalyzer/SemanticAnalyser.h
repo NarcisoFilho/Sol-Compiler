@@ -4,31 +4,68 @@
 #include "AST.h"
 #include "SymbolTable.h"
 
+typedef enum{
+    SE_REDECLARATION,
+    SE_DATA_TYPE_INCOMPATIBILITY,
+    SE_INVALID_INDEX_TYPE,
+    SE_INVALID_ARRAY_SIZE_TYPE,
+    SE_INVALID_INIT_LIST_SIZE,
+    SE_INCOMPATIBLE_OPERAND_TYPES,
+    SE_NOT_BOOLEAN_OPERANDS,
+    SE_UNDECLARED_FUNCTION,
+    SE_UNIMPLEMENTED_FUNCTION,
+    SE_FUNCTION_IMPLEMENTED_TWICE,
+    SE_NOT_VAR_ID,
+    SE_NOT_ARRAY_ID,
+    SE_NOT_FUNC_ID,
+    SE_UNEXPECTED_ARGUMENTS_COUNT,
+    SE_UNEXPECTED_ARGUMENTS_TYPE,
+    SE_UNDECLARED_IDENTIFIER,
+} SemanticErrorType;
 
-// void semanticSetDeclations(AST *node);
+typedef struct{
+    SemanticErrorType errorType;
+    AST* ast;
+}SemanticError;
 
-// **inferencia de tipo
-// em atribuições
-// em expressoes
-// ** funcao para saber se é booleano
 
-void printSemanticError(char*, char*);
-int checkSemantic(AST*);
-void specifyIdentifierType(AST*, int);
-void specifySymbolDataType(AST*, DataType);
-void setDataType(AST*, int);
-bool checkAssignment(AST*);
-// int testID(HASH_NODE* id,AST* node);
-// int calculateFunctionParametersNumber(AST *node);
-// void setNumParams(AST *node, int npar);
-// void checkSymbolsUse(AST *node);
-// void verifyParams(AST *node);
-// int verifyFuncCallParams(AST *node);
-// int countFuncCallParams(AST* node);
-// void checkAstNodeDataType(AST *node);
-// int aritmeticInference(AST *node);
-// int typeInference(int type1, int type2);
-// int verifyAssignmentTypes(int type1, int type2);
-// void hashCheckUndeclared();
+bool checkSemantic(AST*);
+void checkDeclarationStatement(AST*);
+bool verifyIDUnicity(AST*);
+void redefineIDSymbolType(AST*);
+void defineIDSymbolDataType(AST*);
+void verifyInitCompatibility(AST*);
+bool verifyDataTypesCompatibility(DataType, DataType);
+bool verifyIndexType(AST*);
+bool verifyArrayIndexType(AST*);
+bool isIntegerValue(DataType);
+void checkIdentifierDeclaration(AST*);
+void setASTDataType(AST*, DataType);
+DataType determineListType(AST*);
+DataType calculateOutcomeDatatype(DataType, DataType);
+const char* getDataTypeByCode(DataType);
+void determineLiteralDataType(AST*);
+void checkAssignmentDataTypeCompatibility(AST*);
+void checkArraySizeRestrictions(AST*);
+bool checkFunctionDeclaration(AST*);
+bool checkFunctionReimplementation(AST*);
+bool checkFunctionImplementation(AST*);
+bool verifyIfIsIDType(AST*, TokensTypes);
+void checkIfIsArrayID(AST*);
+void checkIfIsVarID(AST*);
+void checkIfIsFunctionID(AST*);
+int calculateParametersCount(AST*);
+int calculateArgumentsListSize(AST*);
+void checkFunctionCalling(AST*);
+void checkArgumentsProvided(AST*);
+void defineFormalParameters(AST*);
+void specifyParametersInSymbol(SymbolTableNode*, AST*);
+
+
+void pushSError(SemanticError);
+void alertAllErrors();
+void alertError(SemanticError);
+
+
 
 #endif // __SEMANTIC_ANALYSER_H_

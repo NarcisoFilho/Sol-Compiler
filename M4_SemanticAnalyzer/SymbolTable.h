@@ -23,7 +23,7 @@
 #include "Boolean.h"
 
 
-enum TokensTypes {
+typedef enum TokensTypes{
     TK_IDENTIFIER_TOKEN,
     LIT_REAL_TOKEN,
     LIT_INT_TOKEN,
@@ -32,13 +32,17 @@ enum TokensTypes {
     VARIABLE_ID_TOKEN,
     ARRAY_ID_TOKEN,
     FUNCTION_ID_TOKEN,
-    PARAM_ID_TOKEN
-};
+    FUNCTION_IMPLEMENTED_ID_TOKEN,
+    PARAM_ID_TOKEN,
+}TokensTypes;
 
 typedef enum {
     CHAR_DATA_TYPE,
     INT_DATA_TYPE,
     REAL_DATA_TYPE,
+    BOOLEAN_DATA_TYPE,
+    STRING_DATA_TYPE,
+    ERROR_DATA_TYPE,
     UNDEF_DATA_TYPE
 } DataType;
 
@@ -47,6 +51,8 @@ typedef struct SymbolTableNode{
     char* value;
     DataType dataType;
     struct SymbolTableNode* nextNode;
+    int parametersCount;
+    struct SymbolTableNode** parameters;
 }SymbolTableNode;
 
 /// Prototypes

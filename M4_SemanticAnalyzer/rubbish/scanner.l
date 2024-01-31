@@ -14,13 +14,7 @@
 
     bool running = true;
     int lineNumber = 1;
-    int collumnNumber = 0;
     extern YYSTYPE yylval;
-
-    typedef struct{
-        int row;
-        int col;
-    } RC;
 %}
 
 %option stack
@@ -92,21 +86,9 @@ int getRow(){
     return lineNumber;
 }
 
-int getCol(){
-    return collumnNumber;
-}
-
-RC getRC(){
-    RC rc;
-    rc.row = getRow();
-    rc.col = getCol();
-
-    return rc;
-}
-
 void initMe(){
     initSymbolTable();
-    //setRehashAlertStatus((int)true);
-    setRehashAlertStatus((int)false);  // Uncomment if don't want rehashing notification
+    setRehashAlertStatus((int)true);
+    // setHehashAlert((int)false);  // Uncomment if don't want rehashing notification
 }
 
