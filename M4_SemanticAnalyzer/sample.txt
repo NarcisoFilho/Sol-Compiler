@@ -14,6 +14,7 @@ int a=0;
 
 int main();
 int incn (int firstParam, int n );
+int decn (int x1, int x2 );
 
 ///
 Este eh um comentario 
@@ -36,6 +37,7 @@ code main
   d = input(int);
   print "Digite mais um numero: \n";
 
+  decn(5, 1);
   if(3 > 1  &  7){
 
   }
@@ -49,7 +51,9 @@ code main
   print "Incrementado algumas vezes a fica ";
   print d;
   print "\n";
+  v = d[3];
 
+  i = incn(3, 4, 5);
   if (a==15)
     {
     a = a + 1;
@@ -67,7 +71,8 @@ code main
 
 code incn
   {
-  return x + n;
+  //return x + n;
+  return 8.9;
   }
 
 // end of file

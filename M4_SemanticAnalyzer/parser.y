@@ -134,6 +134,7 @@ cmd: '{' '}'                                                    {$$ = astCreate(
     | KW_WHILE '(' expression ')' cmd                           {$$ = astCreate(NULL, AST_WHILE, $3, $5); setRC($$, getRC());}
     | KW_PRINT expression ';'                                   {$$ = astCreate(NULL, AST_PRINT, $2); setRC($$, getRC());}
     | KW_RETURN expression ';'                                  {$$ = astCreate(NULL, AST_RETURN, $2); setRC($$, getRC());}
+    | expression ';'                                            {$$ = $1;}
     ;
 
 cmdList: cmd                                                    {$$ = $1;}

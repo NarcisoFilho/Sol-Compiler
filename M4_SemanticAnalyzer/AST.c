@@ -11,6 +11,7 @@ AST* astCreate(SymbolTableNode *symbol, enum AST_TYPE type, ...){
 	tree = calloc(1, sizeof(AST));
 	tree->symbol = symbol;
 	tree->type = type;
+	tree->father = NULL;
 
 	int sonsCount = getSonsCountFromType(type);
 
@@ -22,6 +23,8 @@ AST* astCreate(SymbolTableNode *symbol, enum AST_TYPE type, ...){
 		
 		for(int i = 0 ; i < sonsCount ; i++){		
 			tree->sons[i] = va_arg(args, struct AST *);
+			if(tree->sons[i] != NULL)
+				tree->sons[i]->father = tree;
 		}
 
 		va_end(args);

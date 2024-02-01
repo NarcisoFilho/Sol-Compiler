@@ -130,17 +130,40 @@ bool checkSemantic(AST *ast){
 			case AST_PRINT: 
 				break;
 			case AST_INPUT: 
+				if(ast->symbol != NULL){
+					setASTDataType(ast, ast->symbol->dataType);
+				}else{
+					setASTDataType(ast, UNDEF_DATA_TYPE);
+				}
 				break;
 			case AST_RETURN: 
+				setASTDataType(ast, ast->sons[0]->dataType);
+				AST* functionScope = findFunctionScope(ast);
+				if(functionScope != NULL){
+					if(!verifyDataTypesCompatibility(ast->dataType, functionScope->dataType)){
+						SemanticError se;
+						se.ast = ast;
+						se.errorType = SE_INVALID_RETURN_DATA_TYPE;
+						pushSError(se);
+					}
+				}
 				break;
 			case AST_ASSIGNMENT: 
-				checkAssignmentDataTypeCompatibility(ast);
-				setASTDataType(ast, ast->symbol->dataType);
+				if(checkIfIsVarID(ast)){
+					checkAssignmentDataTypeCompatibility(ast);
+					setASTDataType(ast, ast->symbol->dataType);
+				}else{
+					setASTDataType(ast, UNDEF_DATA_TYPE);
+				}
 				break;
 			case AST_ARRAY_ASSIGN: 
-				verifyArrayIndexType(ast);
-				setASTDataType(ast, ast->symbol->dataType);
-				checkAssignmentDataTypeCompatibility(ast);
+				if(checkIfIsArrayID(ast)){
+					verifyArrayIndexType(ast);
+					setASTDataType(ast, ast->symbol->dataType);
+					checkAssignmentDataTypeCompatibility(ast);
+				}else{
+					setASTDataType(ast, UNDEF_DATA_TYPE);
+				}
 				break;
 
 			case AST_WHILE: 
@@ -150,13 +173,19 @@ bool checkSemantic(AST *ast){
 			case AST_IF_THEN_ELSE: 
 				break;
 			case AST_FUNCTION_CALLING: 
-				checkFunctionCalling(ast);
+				if(checkIfIsFunctionID(ast)){
+					checkFunctionCalling(ast);
+				}else{
+					setASTDataType(ast, UNDEF_DATA_TYPE);
+				}
 				break;
-
 			case AST_ARRAY_EXPR: 
-				verifyArrayIndexType(ast);
-				setASTDataType(ast, ast->symbol->dataType);
-
+				if(checkIfIsArrayID(ast)){
+					verifyArrayIndexType(ast);
+					setASTDataType(ast, ast->symbol->dataType);
+				}else{
+					setASTDataType(ast, UNDEF_DATA_TYPE);
+				}
 				break;
 			case AST_CMD_BLOCK: 
 				break;
@@ -541,28 +570,37 @@ bool verifyIfIsIDType(AST* ast, TokensTypes type){
 	return false;
 }
 
-void checkIfIsArrayID(AST* ast){
+bool checkIfIsArrayID(AST* ast){
 	if(!verifyIfIsIDType(ast, ARRAY_ID_TOKEN)){
 		SemanticError se;
 		se.ast = ast;
 		se.errorType = SE_NOT_ARRAY_ID;
+		pushSError(se);
+		return false;
 	}
+	return true;
 }
 
-void checkIfIsVarID(AST* ast){
+bool checkIfIsVarID(AST* ast){
 	if(!verifyIfIsIDType(ast, VARIABLE_ID_TOKEN)){
 		SemanticError se;
 		se.ast = ast;
 		se.errorType = SE_NOT_VAR_ID;
+		pushSError(se);
+		return false;
 	}
+	return true;
 }
 
-void checkIfIsFunctionID(AST* ast){
+bool checkIfIsFunctionID(AST* ast){
 	if(!verifyIfIsIDType(ast, FUNCTION_ID_TOKEN) && !verifyIfIsIDType(ast, FUNCTION_IMPLEMENTED_ID_TOKEN)){
 		SemanticError se;
 		se.ast = ast;
 		se.errorType = SE_NOT_FUNC_ID;
+		pushSError(se);
+		return false;
 	}
+	return true;
 }
 
 void checkFunctionCalling(AST* ast){
@@ -572,10 +610,10 @@ void checkFunctionCalling(AST* ast){
 			se.ast = ast;
 			if(checkFunctionDeclaration(ast)){
 				setASTDataType(ast, ast->symbol->dataType);
-				if(!checkFunctionImplementation(ast)){					
-					se.errorType = SE_UNIMPLEMENTED_FUNCTION;
-					pushSError(se);
-				}
+				// if(!checkFunctionImplementation(ast)){					
+					// se.errorType = SE_UNIMPLEMENTED_FUNCTION;
+					// pushSError(se);
+				// }
 				checkArgumentsProvided(ast);
 			}else{
 				setASTDataType(ast, UNDEF_DATA_TYPE);
@@ -676,7 +714,18 @@ void defineFormalParameters(AST* ast){
 	}
 }
 
+AST* findFunctionScope(AST* ast){
+	AST* tree = ast;
 
+	while(tree != NULL  &&  tree->type != AST_FUNCTION_IMPLEMENTATION){
+		tree = tree->father;
+	}
+	if(tree != NULL){
+		return tree;
+	}else{
+		return NULL;
+	}
+}
 
 
 
@@ -700,6 +749,7 @@ void alertError(SemanticError se){
 		if(se.ast->symbol != NULL){
 			symbolName = se.ast->symbol->value;
 		}
+		AST *functionScope = findFunctionScope(se.ast);
 		
 		switch(se.errorType){
 			case SE_REDECLARATION:
@@ -716,12 +766,12 @@ void alertError(SemanticError se){
 				break;
 			case SE_DATA_TYPE_INCOMPATIBILITY:
 				const char *dataTypeName = getDataTypeByCode(se.ast->dataType);
-				fprintf(stderr,"Error (%d,%d): %s should be assigned with %s values\n", row, col, symbolName, dataTypeName);	
+				fprintf(stderr,"Error (%d,%d): '%s' should be assigned with %s values\n", row, col, symbolName, dataTypeName);	
 				break;
 			case SE_INVALID_INIT_LIST_SIZE:
 				int maxExpected = atoi(se.ast->sons[1]->symbol->value);
 				int receivedCount = calculateLiteralListSize(se.ast->sons[2]);
-				fprintf(stderr,"Error (%d,%d): Too many elements for initialization of %s. It was expected at most %d elements but received %d.\n", row, col, symbolName, maxExpected, receivedCount);	
+				fprintf(stderr,"Error (%d,%d): Too many elements for initialization of '%s'. It was expected at most %d elements but received %d.\n", row, col, symbolName, maxExpected, receivedCount);	
 				break;
 			case SE_INCOMPATIBLE_OPERAND_TYPES:
 				fprintf(stderr,"Error (%d,%d): Incompatible operands types.\n", row, col);	
@@ -734,6 +784,31 @@ void alertError(SemanticError se){
 				break;
 			case SE_UNEXPECTED_ARGUMENTS_TYPE:
 				fprintf(stderr,"Error (%d,%d): Unexpected argument type\n", row, col);	
+				break;
+			case SE_UNDECLARED_FUNCTION:
+				fprintf(stderr,"Error (%d,%d): Unknown function '%s'\n", row, col, symbolName);	
+				break;
+			case SE_UNIMPLEMENTED_FUNCTION:
+				fprintf(stderr,"Error (%d,%d): Function '%s' implementation not found\n", row, col, symbolName);	
+				break;
+			case SE_NOT_VAR_ID:
+				fprintf(stderr,"Error (%d,%d): '%s' is not a scalar variable\n", row, col, symbolName);	
+				break;
+			case SE_NOT_ARRAY_ID:
+				fprintf(stderr,"Error (%d,%d): '%s' is not an array\n", row, col, symbolName);	
+				break;
+			case SE_NOT_FUNC_ID:
+				fprintf(stderr,"Error (%d,%d): '%s' is not a function\n", row, col, symbolName);	
+				break;
+			case SE_INVALID_RETURN_DATA_TYPE:
+				if(functionScope != NULL){
+					const char *dataTypeReturnExpected = getDataTypeByCode(functionScope->dataType); 
+					const char *functionName = functionScope->symbol->value; 
+					fprintf(stderr,"Error (%d,%d): Invalid return data type. Function '%s' should return a value of type %s\n", row, col, functionName, dataTypeReturnExpected);	
+				}else{
+					fprintf(stderr,"Error (%d,%d): Invalid return data type\n", row, col);	
+				}
+				
 				break;
 		}
 	}

@@ -20,6 +20,7 @@ typedef enum{
     SE_NOT_FUNC_ID,
     SE_UNEXPECTED_ARGUMENTS_COUNT,
     SE_UNEXPECTED_ARGUMENTS_TYPE,
+    SE_INVALID_RETURN_DATA_TYPE,
     SE_UNDECLARED_IDENTIFIER,
 } SemanticErrorType;
 
@@ -51,16 +52,16 @@ bool checkFunctionDeclaration(AST*);
 bool checkFunctionReimplementation(AST*);
 bool checkFunctionImplementation(AST*);
 bool verifyIfIsIDType(AST*, TokensTypes);
-void checkIfIsArrayID(AST*);
-void checkIfIsVarID(AST*);
-void checkIfIsFunctionID(AST*);
+bool checkIfIsArrayID(AST*);
+bool checkIfIsVarID(AST*);
+bool checkIfIsFunctionID(AST*);
 int calculateParametersCount(AST*);
 int calculateArgumentsListSize(AST*);
 void checkFunctionCalling(AST*);
 void checkArgumentsProvided(AST*);
 void defineFormalParameters(AST*);
 void specifyParametersInSymbol(SymbolTableNode*, AST*);
-
+AST* findFunctionScope(AST*);
 
 void pushSError(SemanticError);
 void alertAllErrors();

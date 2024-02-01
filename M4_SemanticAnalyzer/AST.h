@@ -12,6 +12,7 @@ typedef struct AST{
     int dataType;
 	SymbolTableNode *symbol;
 	struct AST **sons;
+	struct AST *father;
     int row;
     int col;
 } AST;
