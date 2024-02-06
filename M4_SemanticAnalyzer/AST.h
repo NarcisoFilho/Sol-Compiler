@@ -6,10 +6,10 @@
 
 #define strgfy(label) #label
 
-enum AST_TYPE;
+enum ASTtype;
 typedef struct AST{
 	int type;
-    int dataType;
+    DataType dataType;
 	SymbolTableNode *symbol;
 	struct AST **sons;
 	struct AST *father;
@@ -24,17 +24,17 @@ typedef struct{
 
 void setGlobalAST(AST*);
 void applyIdentation(FILE*, int, int);
-AST* astCreate(SymbolTableNode*, enum AST_TYPE, ...);
+AST* astCreate(SymbolTableNode*, enum ASTtype, ...);
 void setRC(AST*, RC);
 void astPrint(AST*, int);
 void setGlobalAST(AST *);
 void astExportProgram(FILE*);
 void astGenerateCode(AST*, FILE*, int, int);
 int calculateSonsCount(AST);
-int getSonsCountFromType(enum AST_TYPE);
-char* getTypeName(enum AST_TYPE);
+int getSonsCountFromType(enum ASTtype);
+char* getTypeName(enum ASTtype);
 
-enum AST_TYPE{
+enum ASTtype{
     AST_FULL_PROG,
     AST_HEADER,
     AST_FUNCTION_IMPLEMENTATION_LIST,

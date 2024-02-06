@@ -6,7 +6,7 @@ void setGlobalAST(AST* ast){
 	globalAST = ast;
 }
 
-AST* astCreate(SymbolTableNode *symbol, enum AST_TYPE type, ...){
+AST* astCreate(SymbolTableNode *symbol, enum ASTtype type, ...){
 	AST* tree = NULL;
 	tree = calloc(1, sizeof(AST));
 	tree->symbol = symbol;
@@ -310,7 +310,7 @@ void astGenerateCode(AST* node, FILE* outputFile, int indentationLevel, int newL
 
 }
 
-int getSonsCountFromType(enum AST_TYPE nodeType){
+int getSonsCountFromType(enum ASTtype nodeType){
 	switch(nodeType){
 		case AST_FULL_PROG:
 			return 2;
@@ -407,7 +407,7 @@ int getSonsCountFromType(enum AST_TYPE nodeType){
 		}
 }
 
-char* getTypeName(enum AST_TYPE nodeType){
+char* getTypeName(enum ASTtype nodeType){
 	switch(nodeType){
 		case AST_FULL_PROG:
 			return strgfy(AST_FULL_PROG);

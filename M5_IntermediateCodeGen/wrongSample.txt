@@ -6,15 +6,18 @@ char c='x';
 char d=100;
 int 1a='A';
 int i=1;
-int v[10] 'a' 0'b'0 0 0 0 0 0 0;
+int v[10] 'a' 0 'b' 0 0 0 0 0 0 7.7 8 9;
 int matrix[100]; 
-float f=2.5;
-
+float firstV=2.5;
 int a=0;
 
+int myArray[3.8];
+
 int main();
-int incn (int firstParam, int n );
-int decn (int x1, int x2 );
+int incn (int x, int n );
+int decm(int f);
+char decm(float var17);
+float newFunc(float var17);
 
 ///
 Este eh um comentario 
@@ -26,23 +29,28 @@ code main
   {
   1a = 0;
   d = d - i;
-  d = 5 + 5.7;
+  d = 5;
   v[d] = 55;
   print v[5];
+  print v[7.5];
+  print v[d];
+  print v[firstV];
   print d;
-  i =   incn('a', 7.2);
-  i =   incn(5.99, 7.2);
+  i = 2;
+
+  v[1] = firstV;
+  v[7.5] = firstV;
+  v[firstV] = firstV;
+
+  v[1] = 7.5;
+  v[7.5] = 7.5;
+  v[firstV] = 7.5;
 
   print "Digite um numero: \n";
   d = input(int);
   print "Digite mais um numero: \n";
 
-  decn(5, 1);
-  if(3 > 1  &  7){
-
-  }
-
-  while (f<10.5)
+  while (i<10)
     {
     i = incn(i,1);
     d = incn(d,d);
@@ -51,12 +59,11 @@ code main
   print "Incrementado algumas vezes a fica ";
   print d;
   print "\n";
-  v = d[3];
 
-  i = incn(3, 4, 5);
   if (a==15)
     {
     a = a + 1;
+    weight = 82;
     print "A era=15\n";
     };
     
@@ -71,12 +78,7 @@ code main
 
 code incn
   {
-    if(3){
-      
-    }
-
-  //return x + n;
-  return 8.9;
+  return x + n;
   }
 
 // end of file

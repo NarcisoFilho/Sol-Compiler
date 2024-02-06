@@ -9,22 +9,32 @@
 enum ASTtype;
 typedef struct AST{
 	int type;
+    int dataType;
 	SymbolTableNode *symbol;
 	struct AST **sons;
+	struct AST *father;
+    int row;
+    int col;
 } AST;
+
+typedef struct{
+    int row;
+    int col;
+} RC;
 
 void setGlobalAST(AST*);
 void applyIdentation(FILE*, int, int);
 AST* astCreate(SymbolTableNode*, enum ASTtype, ...);
+void setRC(AST*, RC);
 void astPrint(AST*, int);
 void setGlobalAST(AST *);
 void astExportProgram(FILE*);
-void astGenerateCode (AST*, FILE*, int, int);
+void astGenerateCode(AST*, FILE*, int, int);
 int calculateSonsCount(AST);
 int getSonsCountFromType(enum ASTtype);
 char* getTypeName(enum ASTtype);
 
-enum ASTtype{
+typedef enum ASTtype{
     AST_FULL_PROG,
     AST_HEADER,
     AST_FUNCTION_IMPLEMENTATION_LIST,
@@ -74,6 +84,6 @@ enum ASTtype{
     AST_ARRAY_DEC_AND_INIT,
 
     AST_DECLARATION_LIST,
-};
+}ASTtype;
 
 #endif // __AST_TREE_H_
