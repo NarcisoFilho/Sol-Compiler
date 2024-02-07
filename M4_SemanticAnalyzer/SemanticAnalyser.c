@@ -58,7 +58,7 @@ bool checkSemantic(AST *ast){
 			case AST_ADD: 
 			case AST_SUB: 
 			case AST_MUL: 
-			case AST_DIV: 
+			case AST_DIV:{ 
 				DataType resultDataType = calculateOutcomeDatatype(ast->sons[0]->dataType, ast->sons[1]->dataType);
 				setASTDataType(ast, resultDataType);
 				if(resultDataType == ERROR_DATA_TYPE){
@@ -69,6 +69,7 @@ bool checkSemantic(AST *ast){
 					se.errorType = SE_INCOMPATIBLE_OPERAND_TYPES;
 					pushSError(se);
 				}
+			}
 				break;
 			case AST_OPERATOR_LE: 
 			case AST_OPERATOR_GE: 
@@ -381,6 +382,7 @@ bool verifyIndexType(AST* ast){
 
 		return true;
 	}
+	return false;
 }
 
 bool verifyArrayIndexType(AST* ast){
@@ -464,6 +466,7 @@ DataType determineListType(AST* ast){
 			return ast->dataType = ast->dataType;
 		}
 	}
+	return false;
 }
 
 DataType calculateOutcomeDatatype(DataType type1, DataType type2){
@@ -482,7 +485,7 @@ DataType calculateOutcomeDatatype(DataType type1, DataType type2){
 
 void determineLiteralDataType(AST* ast){
 	if(ast != NULL){
-		if(ast->type = AST_SYMBOL && ast->symbol != NULL){
+		if(ast->type == AST_SYMBOL && ast->symbol != NULL){
 			switch(ast->symbol->type){
 				case LIT_INT_TOKEN:
 					ast->dataType = ast->symbol->dataType = INT_DATA_TYPE;
@@ -507,6 +510,7 @@ int calculateLiteralListSize(AST* ast){
 	}else if(ast->type == AST_SYMBOL){ 
 		return 1;
 	}
+	return 0;
 }
 
 void checkArraySizeRestrictions(AST* ast){
@@ -535,9 +539,11 @@ bool checkFunctionDeclaration(AST* ast){
 				se.col = -1;
 				se.errorType = SE_UNDECLARED_FUNCTION;
 				pushSError(se);
+				return true;
 			}
 		}
 	}
+	return false;
 }
 
 bool checkFunctionReimplementation(AST* ast){
@@ -737,8 +743,8 @@ void defineFormalParameters(AST* ast){
 			ast->symbol->parametersCount = 0;
 			int estimatedCount = calculateParametersCount(ast->sons[1]);
 			if( estimatedCount > 0){
-				ast->symbol->parameters = (SymbolTableNode**)calloc(estimatedCount, sizeof(SymbolTableNode*));
 				AST* paramList = ast->sons[1];
+				ast->symbol->parameters = (SymbolTableNode**)calloc(estimatedCount, sizeof(SymbolTableNode*));
 				specifyParametersInSymbol(ast->symbol, ast->sons[1]);
 			}else{
 				ast->symbol->parameters = NULL;
@@ -772,6 +778,7 @@ void alertAllErrors(){
 
 void alertError(SemanticError se){
 	if(se.ast != NULL){
+		AST *functionScope;
 		const int row = (se.row >= 0) ? se.row : se.ast->row;
 		const int col = (se.col >= 0) ? se.col : se.ast->col;
 
@@ -779,7 +786,7 @@ void alertError(SemanticError se){
 		if(se.ast->symbol != NULL){
 			symbolName = se.ast->symbol->value;
 		}
-		AST *functionScope = findFunctionScope(se.ast);
+		functionScope = findFunctionScope(se.ast);
 		
 		switch(se.errorType){
 			case SE_REDECLARATION:
@@ -795,13 +802,17 @@ void alertError(SemanticError se){
 				fprintf(stderr,"Error (%d,%d): Using non-integer index to access array %s\n", row, col, symbolName);	
 				break;
 			case SE_DATA_TYPE_INCOMPATIBILITY:
-				const char *dataTypeName = getDataTypeByCode(se.ast->dataType);
-				fprintf(stderr,"Error (%d,%d): '%s' should be assigned with %s values\n", row, col, symbolName, dataTypeName);	
+				{
+					const char *dataTypeName = getDataTypeByCode(se.ast->dataType);
+					fprintf(stderr,"Error (%d,%d): '%s' should be assigned with %s values\n", row, col, symbolName, dataTypeName);	
+				}
 				break;
 			case SE_INVALID_INIT_LIST_SIZE:
-				int maxExpected = atoi(se.ast->sons[1]->symbol->value);
-				int receivedCount = calculateLiteralListSize(se.ast->sons[2]);
-				fprintf(stderr,"Error (%d,%d): Too many elements for initialization of '%s'. It was expected at most %d elements but received %d.\n", row, col, symbolName, maxExpected, receivedCount);	
+				{
+					int maxExpected = atoi(se.ast->sons[1]->symbol->value);
+					int receivedCount = calculateLiteralListSize(se.ast->sons[2]);
+					fprintf(stderr,"Error (%d,%d): Too many elements for initialization of '%s'. It was expected at most %d elements but received %d.\n", row, col, symbolName, maxExpected, receivedCount);	
+				}
 				break;
 			case SE_INCOMPATIBLE_OPERAND_TYPES:
 				fprintf(stderr,"Error (%d,%d): Incompatible operands types.\n", row, col);	
@@ -841,7 +852,11 @@ void alertError(SemanticError se){
 				}else{
 					fprintf(stderr,"Error (%d,%d): Invalid return data type\n", row, col);	
 				}
-				
+				break;
+			case SE_FUNCTION_IMPLEMENTED_TWICE:
+				// fprintf(stderr,"Error (%d,%d): The condition expression of a condition statemente should be a boolean value\n", row, col);	
+				break;
+			default:
 				break;
 		}
 	}
@@ -849,21 +864,21 @@ void alertError(SemanticError se){
 
 const char* getDataTypeByCode(DataType dataType){
 	switch(dataType){
-	case INT_DATA_TYPE:
-		return "int";	
-	case CHAR_DATA_TYPE:
-		return "char";	
-	case REAL_DATA_TYPE:
-		return "float";	
-	case BOOLEAN_DATA_TYPE:
-		return "boolean";	
-	case STRING_DATA_TYPE:
-		return "string";	
-	case UNDEF_DATA_TYPE:
-		return "undef";	
-	case ERROR_DATA_TYPE:
-		return "error_data_type";	
-	default:
-		return "!?";
+		case INT_DATA_TYPE:
+			return "int";	
+		case CHAR_DATA_TYPE:
+			return "char";	
+		case REAL_DATA_TYPE:
+			return "float";	
+		case BOOLEAN_DATA_TYPE:
+			return "boolean";	
+		case STRING_DATA_TYPE:
+			return "string";	
+		case UNDEF_DATA_TYPE:
+			return "undef";	
+		case ERROR_DATA_TYPE:
+			return "error_data_type";	
+		default:
+			return "!?";
 	}
 }
