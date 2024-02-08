@@ -17,6 +17,17 @@
 
 #include "SymbolTable.h"
 
+// Private (Internal functions)
+static bool rehashSymbolTable();
+static int calculateHashAddress(char*);
+static int getGreaterPrimeNumber(int);
+static bool isPrimeNumber(int);
+static float getLoadFactor();
+static void printSymbolType(int);
+static void insertNodeInTable(SymbolTableNode*);
+void printSymbolDataType(SymbolTableNode*);
+
+
 // Private Data (Internal atributes)
 static SymbolTableNode** symbolTable;          // Symbol Table pointer
 static int currentTableSize = 7;            // Table entries count(atomatically increased)
@@ -63,7 +74,6 @@ SymbolTableNode* addSymbol(char symbol[], int symbolType){
         }
 
         // Insert new node
-        int address = calculateHashAddress(symbol);
         node = (SymbolTableNode*)calloc(1, sizeof(SymbolTableNode));
 
         char* value = (char*)calloc(strlen(symbol) + 1, sizeof(char));
@@ -245,7 +255,7 @@ int setRehashAlertStatus(int newStatus){
  *  @param  symbol The symbol for calculate adrress
  *  @return The address(index) of 'symbol' in 'symbolTable'
  */
-int calculateHashAddress(char symbol[]){
+static int calculateHashAddress(char symbol[]){
     int address = 1;
     int letter;
     
@@ -265,7 +275,7 @@ int calculateHashAddress(char symbol[]){
  *  @return The greater prime number until 'upperLimit'. If 'upperLimit' smaller than the smallest 
  *  prime number(2), number 2 is returned
  */
-int getGreaterPrimeNumber(int upperLimit){    
+static int getGreaterPrimeNumber(int upperLimit){    
     for(int greater = upperLimit ; greater >= 2 ; greater--){
         if(isPrimeNumber(greater))
             return greater;
@@ -278,7 +288,7 @@ int getGreaterPrimeNumber(int upperLimit){
  *  @param number The number to be checked about primality
  *  @return true if 'number' is prime and false if it is not
  */
-bool isPrimeNumber(int number){
+static bool isPrimeNumber(int number){
     for(int divisor = 2 ; divisor < number ; divisor++){
         if(number % divisor == 0)
             return false;
@@ -293,7 +303,7 @@ bool isPrimeNumber(int number){
  *  @param number The number to be checked about primality
  *  @return true if 'number' is prime and false if it is not
  */
-float getLoadFactor(){    
+static float getLoadFactor(){    
     return addedSymbolsCount / (float)currentTableSize;
 }
 
@@ -302,7 +312,7 @@ float getLoadFactor(){
  * the current size.
  *  @return true if rehash happend successfully and false if did not
  */
-bool rehashSymbolTable(){
+static bool rehashSymbolTable(){
     // New Symbol Table size
     int oldSize = currentTableSize;
     currentTableSize = getGreaterPrimeNumber(2*currentTableSize);
@@ -336,7 +346,7 @@ bool rehashSymbolTable(){
 /** @brief Insert a Table node in Symbol Table
  *  @param node Pointer to the node to be inserted
  */
-void insertNodeInTable(SymbolTableNode* node){
+static void insertNodeInTable(SymbolTableNode* node){
     int address = calculateHashAddress(node->value);
     node->nextNode = symbolTable[address];
     symbolTable[address] = node;

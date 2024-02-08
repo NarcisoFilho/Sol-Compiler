@@ -64,14 +64,4 @@ typedef struct SymbolTableNode{
     int removeSymbol(char*);
     int setRehashAlertStatus(int);
 
-    // Private(Internal functions)
-    static bool rehashSymbolTable();
-    static int calculateHashAddress(char*);
-    static int getGreaterPrimeNumber(int);
-    static bool isPrimeNumber(int);
-    static float getLoadFactor();
-    static void printSymbolType(int);
-    static void insertNodeInTable(SymbolTableNode*);
-    void printSymbolDataType(SymbolTableNode*);
-
 #endif // __SYMBOL_TABLE_HPP

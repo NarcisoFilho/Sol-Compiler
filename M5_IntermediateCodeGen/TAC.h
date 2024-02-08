@@ -28,6 +28,9 @@ typedef enum TACtype{
     TAC_RETURN,
     TAC_PRINT,
     TAC_INPUT,
+    TAC_ASSINGNMENT,
+    TAC_ARRAY_ASSIGNMENT,
+    TAC_JMP_IFZ,
     TAC_UNDEF,
 }TACtype;
 
@@ -46,8 +49,15 @@ TAC* tacGenerateFromAST(AST*);
 TAC* generateBinaryOpTAC(AST*);
 TAC* generateProcedureImplementation(AST*);
 SymbolTableNode* createTempSymbol();
+SymbolTableNode* createLabelSymbol();
 int digitsCount(int);
-TACtype decodeTACtypeFromASTtype(ASTtype);
+TACtype decodeBinaryOperationTACtypeFromASTtype(ASTtype);
+TAC* generateNotOpTAC(AST*);
+TAC* generateReturnTAC(AST*);
+TAC* generatePrintTAC(AST*);
+TAC* generateInputTAC(AST*);
+TAC* generateAssignmentTAC(AST*);
+TAC* generateArrayAssignmentTAC(AST*);
 
 
 #endif //__TAC_H_

@@ -415,8 +415,8 @@ bool verifyDataTypesCompatibility(DataType typeA, DataType typeB){
 	if(typeA == typeB){
 		return true;
 	}else{
-		if(typeA == INT_DATA_TYPE && typeB == CHAR_DATA_TYPE
-		|| typeA == CHAR_DATA_TYPE && typeB == INT_DATA_TYPE){
+		if((typeA == INT_DATA_TYPE && typeB == CHAR_DATA_TYPE)
+		|| (typeA == CHAR_DATA_TYPE && typeB == INT_DATA_TYPE)){
 			return true;
 		}else{
 			return false;
@@ -745,7 +745,7 @@ void defineFormalParameters(AST* ast){
 			if( estimatedCount > 0){
 				AST* paramList = ast->sons[1];
 				ast->symbol->parameters = (SymbolTableNode**)calloc(estimatedCount, sizeof(SymbolTableNode*));
-				specifyParametersInSymbol(ast->symbol, ast->sons[1]);
+				specifyParametersInSymbol(ast->symbol, paramList);
 			}else{
 				ast->symbol->parameters = NULL;
 			}
