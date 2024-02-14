@@ -4,6 +4,7 @@
 	#include "AST.h"
 	#include "y.tab.h"
     #include "SemanticAnalyser.h"	
+    #include "TAC.h"	
     
     // Prototypes
 	int yylex();
@@ -57,6 +58,7 @@ program: declarationsList codeImplementationList        {   $$ = astCreate(NULL,
                                                             setGlobalAST($$); 
                                                             /**astPrint($$,0)*/; 
                                                             if(!checkSemantic($$)) return 4; 
+                                                            printTAC(tacGenerateFromAST($$));
                                                         }
     | declarationsList                                  {$$ = astCreate(NULL, AST_HEADER, $1); setRC($$, getRC()); setGlobalAST($$);}
     ;

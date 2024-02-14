@@ -131,8 +131,8 @@ bool checkSemantic(AST *ast){
 				break;
 
 			case AST_INPUT: 
-				if(ast->symbol != NULL){
-					setASTDataType(ast, ast->symbol->dataType);
+				if(ast->sons[0] != NULL){
+					setASTDataType(ast, ast->sons[0]->dataType);
 				}else{
 					setASTDataType(ast, UNDEF_DATA_TYPE);
 				}
@@ -635,10 +635,10 @@ bool checkIfIsFunctionID(AST* ast){
 void checkFunctionCalling(AST* ast){
 	if(ast != NULL){
 		if(ast->type == AST_FUNCTION_CALLING){
-			SemanticError se;
-			se.ast = ast;
-			se.row = -1;
-			se.col = -1;
+			// SemanticError se;
+			// se.ast = ast;
+			// se.row = -1;
+			// se.col = -1;
 			if(checkFunctionDeclaration(ast)){
 				setASTDataType(ast, ast->symbol->dataType);
 				// if(!checkFunctionImplementation(ast)){					
@@ -646,11 +646,12 @@ void checkFunctionCalling(AST* ast){
 					// pushSError(se);
 				// }
 				checkArgumentsProvided(ast);
-			}else{
-				setASTDataType(ast, UNDEF_DATA_TYPE);
-				se.errorType = SE_UNDECLARED_FUNCTION;
-				pushSError(se);
 			}
+			// else{
+			// 	setASTDataType(ast, UNDEF_DATA_TYPE);
+			// 	se.errorType = SE_UNDECLARED_FUNCTION;
+			// 	pushSError(se);
+			// }
 		}
 	}
 

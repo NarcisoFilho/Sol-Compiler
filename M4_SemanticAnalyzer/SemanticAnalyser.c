@@ -131,8 +131,8 @@ bool checkSemantic(AST *ast){
 				break;
 
 			case AST_INPUT: 
-				if(ast->symbol != NULL){
-					setASTDataType(ast, ast->symbol->dataType);
+				if(ast->sons[0] != NULL){
+					setASTDataType(ast, ast->sons[0]->dataType);
 				}else{
 					setASTDataType(ast, UNDEF_DATA_TYPE);
 				}

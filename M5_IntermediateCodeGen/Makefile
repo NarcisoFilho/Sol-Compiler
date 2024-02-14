@@ -8,7 +8,7 @@
 #
 
 etapa4: SymbolTable.o y.tab.o lex.yy.o main.o AST.o SemanticAnalyser.o  TAC.o
-	gcc -o etapa5 main.o lex.yy.o y.tab.o SymbolTable.o AST.o SemanticAnalyser.o -Wall 
+	gcc -o etapa5 main.o lex.yy.o y.tab.o SymbolTable.o AST.o SemanticAnalyser.o TAC.o -Wall 
 main.o: main.c
 	gcc -c main.c -Wall 
 lex.yy.o: lex.yy.c
