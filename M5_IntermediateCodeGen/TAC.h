@@ -5,11 +5,10 @@
 #include "SymbolTable.h"
 #include "AST.h"
 
-#define TEMP_SYMBOL_STAMP "_J0CK35_TEMP_"
-#define LABEL_STAMP "_J0CK35_LABEL_"
+#define TEMP_SYMBOL_STAMP "_temp_"
+#define LABEL_STAMP "_label_"
 
 typedef enum TACtype{
-    TAC_CLAUSE_SYMBOL,
     TAC_SYMBOL,
     TAC_LABEL,
     TAC_BEGIN_PROCEDURE,
@@ -35,15 +34,23 @@ typedef enum TACtype{
     TAC_RETURN,
     TAC_PRINT,
     TAC_INPUT,
-    TAC_ASSINGNMENT,
     TAC_ARRAY_ASSIGNMENT,
     TAC_JMP,
     TAC_JMP_IFZ,
+    TAC_CLAUSE_SYMBOL,
     TAC_UNDEF,
-
     TAC_VAR_INT_DECLARATION,
     TAC_VAR_CHAR_DECLARATION,
     TAC_VAR_FLOAT_DECLARATION,
+    TAC_PAR_INT_DECLARATION,
+    TAC_PAR_CHAR_DECLARATION,
+    TAC_PAR_FLOAT_DECLARATION,
+    TAC_ARRAY_INT_DECLARATION,
+    TAC_ARRAY_CHAR_DECLARATION,
+    TAC_ARRAY_FLOAT_DECLARATION,
+    TAC_PROCEDURE_INT_DEC,
+    TAC_PROCEDURE_CHAR_DEC,
+    TAC_PROCEDURE_FLOAT_DEC,
 }TACtype;
 
 typedef struct TAC{
@@ -88,6 +95,10 @@ TAC* generateParamAssignWithArgListTAC(AST*, SymbolTableNode*, int);
 TAC* generateParamAssignTACfromParamAST(AST*, SymbolTableNode*, int);
 TAC* generateParamAssignWithArgTAC(TAC*, SymbolTableNode*, int);
 TAC* generateVarDeclarationTAC(AST*);
+TAC* generateArrayDeclarationTAC(AST*);
+TAC* generateArrayDeclarationAndInitTAC(AST*);
+TAC* generateParamDecTac(AST*);
+TAC* generateProcedureDeclarationTAC(AST*);
 
 
 #endif //__TAC_H_

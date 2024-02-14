@@ -1,0 +1,92 @@
+TAC_VAR_CHAR_DECLARATION a, 15, 0
+TAC_VAR_CHAR_DECLARATION x, 'x', 0
+TAC_VAR_CHAR_DECLARATION c, 'x', 0
+TAC_VAR_CHAR_DECLARATION d, 100, 0
+TAC_VAR_INT_DECLARATION 1a, 'A', 0
+TAC_VAR_INT_DECLARATION i, 1, 0
+
+TAC_LABEL _label_5, 0, 0
+TAC_SYMBOL 'a', 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 'b', 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_ARRAY_INT_DECLARATION v, 10, _label_5
+
+TAC_ARRAY_INT_DECLARATION matrix, 100, 0
+TAC_VAR_FLOAT_DECLARATION f, 2.5, 0
+TAC_VAR_INT_DECLARATION a2, 0, 0
+
+
+TAC_BEGIN_PROCEDURE main, 0, 0
+TAC_ASSINGNMENT 1a, 0, 0
+TAC_SUB _temp_8, d, i
+TAC_ASSINGNMENT d, _temp_8, 0
+TAC_ASSINGNMENT d, 5, 0
+TAC_ARRAY_ASSIGNMENT v, d, 55
+TAC_PRINT v, 0, 0
+TAC_PRINT d, 0, 0
+TAC_ASSINGNMENT i, 2, 0
+TAC_PRINT "here we go", 0, 0
+TAC_COPY x2, 3, 0
+TAC_COPY n, 2, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_7, 0, 0
+TAC_ASSINGNMENT i, _temp_7, 0
+TAC_PRINT "Digite um numero: \n", 0, 0
+TAC_INPUT _temp_6, 0, 0
+TAC_ASSINGNMENT d, _temp_6, 0
+TAC_PRINT "Digite mais um numero: \n", 0, 0
+
+TAC_LABEL _label_3, 0, 0
+TAC_LESS_THAN _temp_3, i, 10
+TAC_JMP_IFZ _label_4, _temp_3, 0
+TAC_COPY x2, i, 0
+TAC_COPY n, 1, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_5, 0, 0
+TAC_ASSINGNMENT i, _temp_5, 0
+TAC_COPY x2, d, 0
+TAC_COPY n, d, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_4, 0, 0
+TAC_ASSINGNMENT d, _temp_4, 0
+TAC_JMP _label_3, 0, 0
+TAC_LABEL _label_4, 0, 0
+
+TAC_PRINT "Incrementado algumas vezes a fica ", 0, 0
+TAC_PRINT d, 0, 0
+TAC_PRINT "\n", 0, 0
+TAC_OPERATOR_EQ _temp_1, a, 15
+TAC_JMP_IFZ _label_2, 0, 0
+TAC_ADD _temp_2, a, 1
+TAC_ASSINGNMENT a, _temp_2, 0
+TAC_PRINT "A era=15\n", 0, 0
+TAC_LABEL _label_2, 0, 0
+
+TAC_PRINT "middle", 0, 0
+
+TAC_JMP_IFZ _label_0, 0, 0
+TAC_PRINT "Nao tem como isso...\n", 0, 0
+TAC_JMP _label_1, 0, 0
+TAC_LABEL _label_0, 0, 0
+TAC_PRINT "OK!\n", 0, 0
+TAC_LABEL _label_1, 0, 0
+
+TAC_PRINT "main end", 0, 0
+TAC_END_PROCEDURE main, 0, 0
+
+
+
+
+TAC_BEGIN_PROCEDURE incn, 0, 0
+TAC_ADD _temp_0, x, n
+TAC_RETURN _temp_0, 0, 0
+TAC_END_PROCEDURE incn, 0, 0
+
+

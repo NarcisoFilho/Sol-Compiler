@@ -98,22 +98,14 @@ TAC* tacGenerateFromAST(AST* ast){
             // case AST_ARG_LIST: return generateArgListTAC(ast);
             case AST_LITERAL_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_PARAM_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
-            case AST_PARAM: break;
+            case AST_PARAM: return generateParamDecTac(ast);
         
             case AST_HEADER: return tacGenerateFromAST(ast->sons[0]);
             case AST_DECLARATION_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_VAR_DECLARATION: return generateVarDeclarationTAC(ast);
-            //     break;
-            // case AST_ARRAY_DECLARATION:
-            //     break;
-            // case AST_ARRAY_DEC_AND_INIT:
-            //     break;
-
-            // case AST_CHAR:
-            // case AST_INT:
-            // case AST_FLOAT:
-            // case AST_FUNCTION_DECLARATION:
-            //     break;
+            case AST_ARRAY_DECLARATION: return generateArrayDeclarationTAC(ast);
+            case AST_ARRAY_DEC_AND_INIT: return generateArrayDeclarationAndInitTAC(ast);
+            case AST_FUNCTION_DECLARATION: return generateProcedureDeclarationTAC(ast);
             default: break;
         }
     }
@@ -127,6 +119,62 @@ TAC* generateVarDeclarationTAC(AST* ast){
         case AST_FLOAT: return tacCreate(TAC_VAR_FLOAT_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
     }
     return NULL;
+}
+
+TAC* generateParamDecTac(AST* ast){
+    if(ast != NULL){
+        if(ast->sons[0] != NULL){
+            switch(ast->sons[0]->type){
+                case AST_INT: return tacCreate(TAC_PAR_INT_DECLARATION, ast->symbol, NULL, NULL);
+                case AST_CHAR: return tacCreate(TAC_PAR_CHAR_DECLARATION, ast->symbol, NULL, NULL);
+                case AST_FLOAT: return tacCreate(TAC_PAR_FLOAT_DECLARATION, ast->symbol, NULL, NULL);
+            }
+        }
+    }
+    return NULL;
+}
+
+TAC* generateProcedureDeclarationTAC(AST* ast){
+    if(ast != NULL){
+        TAC *procedureDecTac = NULL;
+        switch(ast->sons[0]->type){
+            case AST_INT: procedureDecTac = tacCreate(TAC_PROCEDURE_INT_DEC, ast->symbol, NULL, NULL); break;
+            case AST_CHAR: procedureDecTac = tacCreate(TAC_PROCEDURE_CHAR_DEC, ast->symbol, NULL, NULL); break;
+            case AST_FLOAT: procedureDecTac = tacCreate(TAC_PROCEDURE_FLOAT_DEC, ast->symbol, NULL, NULL); break;
+        }
+        if(procedureDecTac != NULL){
+            TAC *paramsListTac = tacGenerateFromAST(ast->sons[1]);
+            return joinTacs(procedureDecTac, paramsListTac);
+        }
+    }
+    return NULL;
+}
+
+TAC* generateArrayDeclarationTAC(AST* ast){
+    switch(ast->sons[0]->type){
+        case AST_INT: return tacCreate(TAC_ARRAY_INT_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
+        case AST_CHAR: return tacCreate(TAC_ARRAY_CHAR_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
+        case AST_FLOAT: return tacCreate(TAC_ARRAY_FLOAT_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
+    }
+    return NULL;
+}
+
+TAC* generateArrayDeclarationAndInitTAC(AST* ast){
+    SymbolTableNode *literalListLabel = createLabelSymbol();
+    TAC *literailsListLabelTac = generateLabelTAC(literalListLabel);
+    TAC *literailsListTac = tacGenerateFromAST(ast->sons[2]);
+    TAC *declarationTac;
+
+    switch(ast->sons[0]->type){
+        case AST_INT: declarationTac = tacCreate(TAC_ARRAY_INT_DECLARATION, ast->symbol, ast->sons[1]->symbol, literalListLabel); break;
+        case AST_CHAR: declarationTac = tacCreate(TAC_ARRAY_CHAR_DECLARATION, ast->symbol, ast->sons[1]->symbol, literalListLabel); break;
+        case AST_FLOAT: declarationTac = tacCreate(TAC_ARRAY_FLOAT_DECLARATION, ast->symbol, ast->sons[1]->symbol, literalListLabel); break;
+    }
+
+    literailsListLabelTac->brLineBefore = 1;
+    declarationTac->brLineAfter = 1;
+
+    return joinMutipleTacs(3, literailsListLabelTac, literailsListTac, declarationTac);
 }
 
 TAC* generateParamAssignWithArgListTAC(AST* ast, SymbolTableNode* function, int paramNumber){
@@ -251,31 +299,30 @@ TAC* generateWhileTAC(AST* ast){
 TAC* generateIfElseTAC(AST* ast){
     SymbolTableNode *labelToElseCmd = createLabelSymbol();
     SymbolTableNode *labelToEndIf = createLabelSymbol();
-    SymbolTableNode *booleanExpression = ast->sons[0]->symbol;
     
-    TAC *jmpElseTac = tacCreate(TAC_JMP_IFZ, labelToElseCmd, booleanExpression, NULL);
+    TAC *expressionTestTac = tacGenerateFromAST(ast->sons[0]);
+    TAC *jmpElseTac = tacCreate(TAC_JMP_IFZ, labelToElseCmd, expressionTestTac->dst, NULL);
     TAC *jmpEndIfTac = tacCreate(TAC_JMP, labelToEndIf, NULL, NULL);
     TAC *elseLabelTac = generateLabelTAC(labelToElseCmd);
     TAC *endLabelTac = generateLabelTAC(labelToEndIf);
 
-    jmpElseTac->brLineBefore = 1;
+    expressionTestTac->brLineBefore = 1;
     endLabelTac->brLineAfter = 1;
 
-    return joinMutipleTacs(6, jmpElseTac, tacGenerateFromAST(ast->sons[1]), jmpEndIfTac, elseLabelTac, tacGenerateFromAST(ast->sons[2]), endLabelTac);
+    return joinMutipleTacs(7, expressionTestTac, jmpElseTac, tacGenerateFromAST(ast->sons[1]), jmpEndIfTac, elseLabelTac, tacGenerateFromAST(ast->sons[2]), endLabelTac);
 }
 
 TAC* generateIfTAC(AST* ast){
     SymbolTableNode *labelToEndIf = createLabelSymbol();
-    SymbolTableNode *booleanExpression = ast->sons[0]->symbol;
-    
-    TAC *jmpEndIfTac = tacCreate(TAC_JMP_IFZ, labelToEndIf, booleanExpression, NULL);
+    TAC *expressionTestTac = tacGenerateFromAST(ast->sons[0]);
+    TAC *jmpEndIfTac = tacCreate(TAC_JMP_IFZ, labelToEndIf, expressionTestTac->dst, NULL);
     TAC *cmdList = tacGenerateFromAST(ast->sons[1]);
     TAC *endLabelTac = generateLabelTAC(labelToEndIf);
 
-    jmpEndIfTac->brLineBefore = 1;
+    expressionTestTac->brLineBefore = 1;
     endLabelTac->brLineAfter = 1;
     
-    return joinMutipleTacs(3, jmpEndIfTac, cmdList, endLabelTac);
+    return joinMutipleTacs(4, expressionTestTac, jmpEndIfTac, cmdList, endLabelTac);
 }
 
 TAC* generateLabelTAC(SymbolTableNode* symbol){
@@ -294,7 +341,7 @@ TAC* generateAssignmentTAC(AST* ast){
         TAC* valueTac = tacGenerateFromAST(ast->sons[0]);
         if(valueTac != NULL){
             SymbolTableNode *dst = ast->symbol;
-            TAC *assigmentTac = tacCreate(TAC_ASSINGNMENT, dst, valueTac->dst, NULL);
+            TAC *assigmentTac = tacCreate(TAC_COPY, dst, valueTac->dst, NULL);
             
             if(valueTac->type != TAC_SYMBOL){
                 assigmentTac = joinTacs(valueTac, assigmentTac);
@@ -315,7 +362,7 @@ TAC* generateNotOpTAC(AST* ast){
 TAC* generateReturnTAC(AST* ast){
     TAC *valueTac = tacGenerateFromAST(ast->sons[0]);
     if(valueTac != NULL){
-        TAC *returnTac = tacCreate(TAC_RETURN, createTempSymbol(), valueTac->dst, NULL);
+        TAC *returnTac = tacCreate(TAC_RETURN, valueTac->dst, NULL, NULL);
 
         if(valueTac->type != TAC_SYMBOL){
             returnTac = joinTacs(valueTac, returnTac);
@@ -370,10 +417,9 @@ TAC* generateProcedureImplementation(AST* ast){
     if(ast != NULL){
         if(ast->type == AST_FUNCTION_IMPLEMENTATION){
             if(ast->sons[0] != NULL){
-                SymbolTableNode *functionLabel = createLabelSymbol();
-                TAC* initTac = tacCreate(TAC_BEGIN_PROCEDURE, functionLabel, ast->sons[0]->symbol, NULL);
+                TAC* initTac = tacCreate(TAC_BEGIN_PROCEDURE, ast->symbol, ast->sons[0]->symbol, NULL);
                 TAC* commandsTac = tacGenerateFromAST(ast->sons[0]);
-                TAC* endTac = tacCreate(TAC_END_PROCEDURE, functionLabel, NULL, NULL);
+                TAC* endTac = tacCreate(TAC_END_PROCEDURE, ast->symbol, NULL, NULL);
 
                 initTac->brLineBefore = 2;
                 endTac->brLineAfter = 2;
@@ -474,16 +520,16 @@ SymbolTableNode* createLabelSymbol(){
 
 void printTAC(TAC* tac){
     if(tac != NULL){
+        breakLineBefore(tac);
         if(tac->type != TAC_CLAUSE_SYMBOL){
             const char* tacTypeName = getNameFromTACtype(tac->type);
             const char* dst = (tac->dst != NULL) ? tac->dst->value : "0";
             const char* src1 = (tac->src1 != NULL) ? tac->src1->value : "0";
             const char* src2 = (tac->src2 != NULL) ? tac->src2->value : "0";
             
-            breakLineBefore(tac);
             printf("%s %s, %s, %s\n", tacTypeName, dst, src1, src2);
-            breakLineAfter(tac);
         }
+        breakLineAfter(tac);
         
         printTAC(tac->next);
     }
@@ -543,8 +589,6 @@ const char* getNameFromTACtype(TACtype type){
             return "TAC_PRINT";
         case TAC_INPUT:
             return "TAC_INPUT";
-        case TAC_ASSINGNMENT:
-            return "TAC_ASSINGNMENT";
         case TAC_ARRAY_ASSIGNMENT:
             return "TAC_ARRAY_ASSIGNMENT";
         case TAC_JMP_IFZ:
@@ -571,10 +615,28 @@ const char* getNameFromTACtype(TACtype type){
             return "TAC_VAR_CHAR_DECLARATION";
         case TAC_VAR_FLOAT_DECLARATION:
             return "TAC_VAR_FLOAT_DECLARATION";
+        case TAC_ARRAY_INT_DECLARATION:
+            return "TAC_ARRAY_INT_DECLARATION";
+        case TAC_ARRAY_CHAR_DECLARATION:
+            return "TAC_ARRAY_CHAR_DECLARATION";
+        case TAC_ARRAY_FLOAT_DECLARATION:
+            return "TAC_ARRAY_FLOAT_DECLARATION";
+        case TAC_PAR_INT_DECLARATION:
+            return "TAC_PAR_INT_DECLARATION";
+        case TAC_PAR_CHAR_DECLARATION:
+            return "TAC_PAR_CHAR_DECLARATION";
+        case TAC_PAR_FLOAT_DECLARATION:
+            return "TAC_PAR_FLOAT_DECLARATION";
+        case TAC_PROCEDURE_INT_DEC:
+            return "TAC_PROCEDURE_INT_DEC";
+        case TAC_PROCEDURE_CHAR_DEC:
+            return "TAC_PROCEDURE_CHAR_DEC";
+        case TAC_PROCEDURE_FLOAT_DEC:
+            return "TAC_PROCEDURE_FLOAT_DEC";
         default:
             return "?";
     }
-}
+}   
 
 void registerAddedTempSymbol(SymbolTableNode* tempSymbolAdded){
     listOfTempSymbolsAdded[countOfTempSymbolsAdded++] = tempSymbolAdded;
