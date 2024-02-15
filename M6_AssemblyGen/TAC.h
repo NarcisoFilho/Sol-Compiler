@@ -52,8 +52,6 @@ typedef enum TACtype{
     TAC_PROCEDURE_INT_DEC,
     TAC_PROCEDURE_CHAR_DEC,
     TAC_PROCEDURE_FLOAT_DEC,
-    TAC_DECLARATIONS_SECTION,
-    TAC_IMPLEMENTATION_SECTION,
 }TACtype;
 
 typedef struct TAC{
@@ -105,8 +103,5 @@ TAC* generateProcedureDeclarationTAC(AST*);
 void registerAddedTempSymbol(SymbolTableNode*);
 void registerAddedLabel(SymbolTableNode*);
 TAC* generateArrayExpTac(AST*);
-TAC* generateFullProgramTac(AST*);
-TAC* generateTacFromTempVars();
-TAC* generateHeaderTac(AST*);
 
 #endif //__TAC_H_

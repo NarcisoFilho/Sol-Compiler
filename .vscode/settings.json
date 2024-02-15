@@ -2,6 +2,7 @@
     "files.associations": {
         "symboltable.h": "c",
         "string.h": "c",
-        "ast.h": "c"
+        "ast.h": "c",
+        "unistd.h": "c"
     }
 }

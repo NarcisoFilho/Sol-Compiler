@@ -1,0 +1,109 @@
+TAC_VAR_CHAR_DECLARATION a, 15, 0
+TAC_VAR_CHAR_DECLARATION x, 'x', 0
+TAC_VAR_CHAR_DECLARATION c, 'x', 0
+TAC_VAR_CHAR_DECLARATION d, 100, 0
+TAC_VAR_INT_DECLARATION 1a, 'A', 0
+TAC_VAR_INT_DECLARATION i, 1, 0
+
+TAC_LABEL _label_6, 0, 0
+TAC_SYMBOL 'a', 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 'b', 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_SYMBOL 0, 0, 0
+TAC_ARRAY_INT_DECLARATION v, 10, _label_6
+
+TAC_ARRAY_INT_DECLARATION matrix, 100, 0
+TAC_VAR_FLOAT_DECLARATION f, 2.5, 0
+TAC_VAR_INT_DECLARATION a2, 0, 0
+
+TAC_PROCEDURE_INT_DEC main, 0, 0
+
+TAC_PROCEDURE_INT_DEC incn, 0, 0
+TAC_PAR_INT_DECLARATION x2, 0, 0
+TAC_PAR_INT_DECLARATION n, 0, 0
+
+
+TAC_BEGIN_PROCEDURE main, 0, 0
+TAC_COPY 1a, 0, 0
+TAC_SUB _temp_14, d, i
+TAC_COPY d, _temp_14, 0
+TAC_COPY d, 5, 0
+TAC_ARRAY_ASSIGNMENT v, d, 55
+TAC_ADD _temp_13, 55, 2
+TAC_ADD _temp_12, d, 1
+TAC_ARRAY_ASSIGNMENT v, _temp_12, _temp_13
+TAC_PRINT _temp_11, 0, 0
+TAC_PRINT d, 0, 0
+TAC_COPY i, 2, 0
+TAC_PRINT "here we go", 0, 0
+TAC_COPY x2, 3, 0
+TAC_COPY n, 2, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_10, 0, 0
+TAC_COPY i, _temp_10, 0
+TAC_PRINT "Digite um numero: \n", 0, 0
+TAC_INPUT _temp_9, 0, 0
+TAC_COPY d, _temp_9, 0
+TAC_PRINT "Digite mais um numero: \n", 0, 0
+
+TAC_LABEL _label_4, 0, 0
+TAC_LESS_THAN _temp_6, i, 10
+TAC_JMP_IFZ _label_5, _temp_6, 0
+TAC_COPY x2, i, 0
+TAC_COPY n, 1, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_8, 0, 0
+TAC_COPY i, _temp_8, 0
+TAC_COPY x2, d, 0
+TAC_COPY n, d, 0
+TAC_CALL_PROCEDURE incn, 0, 0
+TAC_MOV_LAST_RETURN _temp_7, 0, 0
+TAC_COPY d, _temp_7, 0
+TAC_JMP _label_4, 0, 0
+TAC_LABEL _label_5, 0, 0
+
+TAC_PRINT "Incrementado algumas vezes a fica ", 0, 0
+TAC_PRINT d, 0, 0
+TAC_PRINT "\n", 0, 0
+
+TAC_OPERATOR_EQ _temp_4, a, 15
+TAC_JMP_IFZ _label_3, _temp_4, 0
+TAC_ADD _temp_5, a, 1
+TAC_COPY a, _temp_5, 0
+TAC_PRINT "A era=15\n", 0, 0
+TAC_LABEL _label_3, 0, 0
+
+TAC_PRINT "middle", 0, 0
+
+TAC_OPERATOR_EQ _temp_3, i, 100
+TAC_JMP_IFZ _label_1, _temp_3, 0
+TAC_PRINT "Nao tem como isso...\n", 0, 0
+TAC_JMP _label_2, 0, 0
+TAC_LABEL _label_1, 0, 0
+TAC_PRINT "OK!\n", 0, 0
+TAC_LABEL _label_2, 0, 0
+
+
+TAC_OPERATOR_EQ _temp_1, 1, 0
+TAC_NOT _temp_2, _temp_1, 0
+TAC_JMP_IFZ _label_0, _temp_1, 0
+TAC_LABEL _label_0, 0, 0
+
+TAC_PRINT "main end", 0, 0
+TAC_END_PROCEDURE main, 0, 0
+
+
+
+
+TAC_BEGIN_PROCEDURE incn, 0, 0
+TAC_ADD _temp_0, x, n
+TAC_RETURN _temp_0, 0, 0
+TAC_END_PROCEDURE incn, 0, 0
+
+

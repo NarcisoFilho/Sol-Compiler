@@ -67,8 +67,7 @@ TAC* joinMutipleTacs(int count, ...){
 TAC* tacGenerateFromAST(AST* ast){
     if(ast != NULL){
         switch(ast->type){
-            case AST_FULL_PROG: return generateFullProgramTac(ast);
-            case AST_HEADER: return generateHeaderTac(ast);
+            case AST_FULL_PROG: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_FUNCTION_IMPLEMENTATION_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_FUNCTION_IMPLEMENTATION: return generateProcedureImplementation(ast);
             case AST_CMD_BLOCK: return tacGenerateFromAST(ast->sons[0]);
@@ -96,9 +95,11 @@ TAC* tacGenerateFromAST(AST* ast){
             case AST_FUNCTION_CALLING: return generateProcedureCallTAC(ast);
             case AST_SYMBOL: return tacCreate(TAC_SYMBOL, ast->symbol, NULL, NULL);
             case AST_ARRAY_EXPR: return generateArrayExpTac(ast);
+            // case AST_ARG_LIST: return generateArgListTAC(ast);
             case AST_LITERAL_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_PARAM_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_PARAM: return generateParamDecTac(ast);
+            case AST_HEADER: return tacGenerateFromAST(ast->sons[0]);
             case AST_DECLARATION_LIST: return joinTacs(tacGenerateFromAST(ast->sons[0]), tacGenerateFromAST(ast->sons[1]));
             case AST_VAR_DECLARATION: return generateVarDeclarationTAC(ast);
             case AST_ARRAY_DECLARATION: return generateArrayDeclarationTAC(ast);
@@ -154,35 +155,6 @@ TAC* generateArrayDeclarationTAC(AST* ast){
         case AST_INT: return tacCreate(TAC_ARRAY_INT_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
         case AST_CHAR: return tacCreate(TAC_ARRAY_CHAR_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
         case AST_FLOAT: return tacCreate(TAC_ARRAY_FLOAT_DECLARATION, ast->symbol, ast->sons[1]->symbol, NULL);
-    }
-    return NULL;
-}
-
-TAC* generateTacFromTempVars(){
-    return NULL;
-}
-
-TAC* generateFullProgramTac(AST* ast){
-    if(ast != NULL){
-        TAC *declarationSectionTac = tacCreate(TAC_DECLARATIONS_SECTION, NULL, NULL, NULL);
-        TAC *codeSectionTac = tacCreate(TAC_IMPLEMENTATION_SECTION, NULL, NULL, NULL);
-        TAC *implementationsTac = tacGenerateFromAST(ast->sons[1]);
-        TAC *declarationsTac = tacGenerateFromAST(ast->sons[0]);
-        TAC *tempVardeclarationsTac = generateTacFromTempVars();
-
-        declarationSectionTac->brLineAfter = 1;
-        codeSectionTac->brLineBefore = 1;
-        return joinMutipleTacs(5, declarationSectionTac, tempVardeclarationsTac, declarationsTac, codeSectionTac, implementationsTac);
-    }
-    return NULL;
-}
-
-TAC* generateHeaderTac(AST* ast){
-    if(ast != NULL){
-        TAC *declarationSectionTac = tacCreate(TAC_DECLARATIONS_SECTION, NULL, NULL, NULL);
-        TAC *declarationsTac = tacGenerateFromAST(ast->sons[0]);
-
-        return joinMutipleTacs(2, declarationSectionTac, declarationsTac);
     }
     return NULL;
 }
@@ -725,10 +697,6 @@ const char* getNameFromTACtype(TACtype type){
             return "TAC_PROCEDURE_FLOAT_DEC";
         case TAC_COPY_ARRAY_ELEMENT:
             return "TAC_COPY_ARRAY_ELEMENT";
-        case TAC_DECLARATIONS_SECTION:
-            return "TAC_DECLARATIONS_SECTION";
-        case TAC_IMPLEMENTATION_SECTION:
-            return "TAC_IMPLEMENTATION_SECTION";
         default:
             return "?";
     }
