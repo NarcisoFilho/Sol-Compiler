@@ -35,6 +35,7 @@ typedef enum TACtype{
     TAC_PRINT,
     TAC_INPUT,
     TAC_ARRAY_ASSIGNMENT,
+    TAC_COPY_ARRAY_ELEMENT,
     TAC_JMP,
     TAC_JMP_IFZ,
     TAC_CLAUSE_SYMBOL,
@@ -69,7 +70,7 @@ TAC* joinTacs(TAC*, TAC*);
 TAC* tacGenerateFromAST(AST*);
 TAC* generateBinaryOpTAC(AST*);
 TAC* generateProcedureImplementation(AST*);
-SymbolTableNode* createTempSymbol();
+SymbolTableNode* createTempSymbol(DataType);
 SymbolTableNode* createLabelSymbol();
 int digitsCount(int);
 TACtype decodeBinaryOperationTACtypeFromASTtype(ASTtype);
@@ -99,6 +100,8 @@ TAC* generateArrayDeclarationTAC(AST*);
 TAC* generateArrayDeclarationAndInitTAC(AST*);
 TAC* generateParamDecTac(AST*);
 TAC* generateProcedureDeclarationTAC(AST*);
-
+void registerAddedTempSymbol(SymbolTableNode*);
+void registerAddedLabel(SymbolTableNode*);
+TAC* generateArrayExpTac(AST*);
 
 #endif //__TAC_H_
